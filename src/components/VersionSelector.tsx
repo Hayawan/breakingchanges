@@ -5,7 +5,11 @@ import { Select, Button, Group, Text, Box } from '@mantine/core';
 import { VersionSelectorProps } from '@/lib/types';
 import styles from '@/styles/VersionSelector.module.css';
 
-export function VersionSelector({ releases, onSelect, isLoading = false }: VersionSelectorProps) {
+export function VersionSelector({ 
+  releases, 
+  onSelect, 
+  isLoading = false
+}: VersionSelectorProps) {
   const [currentVersion, setCurrentVersion] = useState<string | null>(null);
   const [targetVersion, setTargetVersion] = useState<string | null>(null);
 

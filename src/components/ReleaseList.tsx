@@ -16,7 +16,7 @@ import {
   Box,
   Flex
 } from '@mantine/core';
-import { IconCalendar, IconExternalLink, IconTag, IconAlertTriangle, IconFilter, IconFilterOff } from '@tabler/icons-react';
+import { IconCalendar, IconExternalLink, IconTag, IconAlertTriangle, IconFilter, IconFilterOff, IconInfoCircle } from '@tabler/icons-react';
 import { GitHubRelease, GitHubRepoInfo } from '@/lib/types';
 import { useState } from 'react';
 import styles from '@/styles/ReleaseList.module.css';
@@ -26,9 +26,11 @@ interface ReleaseListProps {
   repoInfo: GitHubRepoInfo;
   isLoading: boolean;
   error: string | null;
+  hasReleaseNotes?: boolean;
+  usingTags?: boolean;
 }
 
-export function ReleaseList({ releases, repoInfo, isLoading, error }: ReleaseListProps) {
+export function ReleaseList({ releases, repoInfo, isLoading, error, hasReleaseNotes = true, usingTags = false }: ReleaseListProps) {
   // State to track whether to show only breaking changes
   const [showOnlyBreaking, setShowOnlyBreaking] = useState(false);
 
@@ -113,6 +115,23 @@ export function ReleaseList({ releases, repoInfo, isLoading, error }: ReleaseLis
       </Group>
       
       <Divider mb="md" />
+
+      {/* Warning for repositories without meaningful release notes */}
+      {!hasReleaseNotes && (
+        <Alert 
+          color="orange"
+          variant='light'
+          title={usingTags ? "Tags detected — not formal releases" : "Limited release notes available"}
+          icon={<IconInfoCircle size={16} />}
+          mb="md"
+          mx="md"
+          className={styles.warningAlert}
+        >
+          {usingTags 
+            ? "This repository uses Git tags instead of formal releases. Release notes may be missing or incomplete. Version selection and changelog preview are unavailable. For accurate information, refer to the project's official documentation."
+            : "This repository has limited release notes. Breaking changes may be missed. Version selection and changelog preview are unavailable. For more details, check the project's official documentation."}
+        </Alert>
+      )}
       
       {showOnlyBreaking && (
         <Box mb="md" className={styles.filterNotice}>
@@ -124,7 +143,7 @@ export function ReleaseList({ releases, repoInfo, isLoading, error }: ReleaseLis
       )}
       
       <ScrollArea h={500} type="auto">
-        <Table striped highlightOnHover stickyHeader captionSide="top" >
+        <Table striped highlightOnHover captionSide="top">
         <Table.Caption>Scroll through the table to see all releases</Table.Caption>
           <Table.Thead>
             <Table.Tr>

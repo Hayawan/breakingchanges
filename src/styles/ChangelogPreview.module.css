@@ -30,6 +30,12 @@
   overflow-y: auto;
 }
 
+.warningAlert {
+  border-left: 3px solid var(--mantine-color-yellow-5);
+  background-color: var(--mantine-color-yellow-0);
+  margin-bottom: 1rem;
+}
+
 /* Markdown styles applied to release content */
 .releaseContent h1, 
 .releaseContent h2, 

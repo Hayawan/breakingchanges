@@ -29,11 +29,134 @@
   padding: 8px 14px;
   font-weight: 500;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #ffffff;
 }
 
 .repoBadge:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Language-specific classes with gradients */
+.language-javascript {
+  background: linear-gradient(45deg, var(--mantine-color-yellow-8), var(--mantine-color-orange-6));
+}
+
+.language-typescript {
+  background: linear-gradient(45deg, var(--mantine-color-blue-6), var(--mantine-color-indigo-5));
+}
+
+.language-python {
+  background: linear-gradient(45deg, var(--mantine-color-blue-7), var(--mantine-color-cyan-6));
+}
+
+.language-java {
+  background: linear-gradient(45deg, var(--mantine-color-orange-8), var(--mantine-color-red-6));
+}
+
+.language-csharp {
+  background: linear-gradient(45deg, var(--mantine-color-grape-7), var(--mantine-color-violet-6));
+}
+
+.language-go {
+  background: linear-gradient(45deg, var(--mantine-color-teal-6), var(--mantine-color-cyan-5));
+}
+
+.language-rust {
+  background: linear-gradient(45deg, var(--mantine-color-orange-7), var(--mantine-color-red-8));
+}
+
+.language-php {
+  background: linear-gradient(45deg, var(--mantine-color-indigo-7), var(--mantine-color-grape-6));
+}
+
+.language-ruby {
+  background: linear-gradient(45deg, var(--mantine-color-red-7), var(--mantine-color-pink-6));
+}
+
+.language-kotlin {
+  background: linear-gradient(45deg, var(--mantine-color-violet-6), var(--mantine-color-grape-7));
+}
+
+.language-swift {
+  background: linear-gradient(45deg, var(--mantine-color-orange-6), var(--mantine-color-red-5));
+}
+
+.language-flutter {
+  background: linear-gradient(45deg, var(--mantine-color-blue-6), var(--mantine-color-indigo-7));
+}
+
+.language-cpp {
+  background: linear-gradient(45deg, var(--mantine-color-pink-7), var(--mantine-color-violet-6));
+}
+
+.language-c {
+  background: linear-gradient(45deg, var(--mantine-color-gray-7), var(--mantine-color-dark-5));
+}
+
+.language-all {
+  background: linear-gradient(45deg, var(--mantine-color-blue-7), var(--mantine-color-indigo-6));
+}
+
+/* Text color for language selection */
+.text-javascript {
+  color: var(--mantine-color-yellow-5) !important;
+}
+
+.text-typescript {
+  color: var(--mantine-color-blue-5) !important;
+}
+
+.text-python {
+  color: var(--mantine-color-blue-6) !important;
+}
+
+.text-java {
+  color: var(--mantine-color-orange-6) !important;
+}
+
+.text-csharp {
+  color: var(--mantine-color-grape-6) !important;
+}
+
+.text-go {
+  color: var(--mantine-color-teal-5) !important;
+}
+
+.text-rust {
+  color: var(--mantine-color-orange-6) !important;
+}
+
+.text-php {
+  color: var(--mantine-color-indigo-6) !important;
+}
+
+.text-ruby {
+  color: var(--mantine-color-red-6) !important;
+}
+
+.text-kotlin {
+  color: var(--mantine-color-violet-6) !important;
+}
+
+.text-swift {
+  color: var(--mantine-color-orange-5) !important;
+}
+
+.text-flutter {
+  color: var(--mantine-color-blue-5) !important;
+}
+
+.text-cpp {
+  color: var(--mantine-color-pink-6) !important;
+}
+
+.text-c {
+  color: var(--mantine-color-gray-6) !important;
+}
+
+.text-all {
+  color: var(--mantine-color-blue-5) !important;
 }
 
 .repoSelectorContainer {
@@ -44,6 +167,44 @@
   min-width: 65%;
 }
 
+/* New inline selector styles */
+.selectorSentence {
+  margin-bottom: 8px;
+}
+
+.inlineSelect {
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+}
+
+.inlineSelect :global(.mantine-Select-wrapper) {
+  width: auto;
+}
+
+.inlineSelect :global(.mantine-Select-input) {
+  cursor: pointer;
+  border-bottom: 1px dashed;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border-radius: 0;
+  background: transparent;
+  border-color: transparent;
+  padding: 0;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+.inlineSelect :global(.mantine-Select-input:hover) {
+  opacity: 0.8;
+}
+
+.inlineRepos {
+  margin-top: 4px;
+}
+
+/* Original styles */
 .languageSelect {
   width: 150px;
   margin-left: auto;
@@ -67,5 +228,15 @@
   
   .languageSelect {
     width: 120px;
+  }
+  
+  .selectorSentence {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .inlineRepos {
+    margin-top: 8px;
+    width: 100%;
   }
 } 

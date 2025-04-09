@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Text, Group, Select, Badge, Center, Tooltip, useMantineTheme } from '@mantine/core';
-import { IconCode, IconRocket } from '@tabler/icons-react';
+import { Text, Select, Badge, Tooltip, Flex } from '@mantine/core';
+import { IconRocket } from '@tabler/icons-react';
 import styles from '../styles/RepoInput.module.css';
+import cx from 'clsx';
 
 // Popular repositories for each language
 const POPULAR_REPOS = {
@@ -62,7 +63,6 @@ const LANGUAGE_CATEGORIES = {
   Backend: ['python', 'java', 'go', 'php', 'ruby'],
   Mobile: ['kotlin', 'swift'],
   Systems: ['cpp', 'rust'],
-  Other: ['all']
 };
 
 // Language display names for better readability
@@ -84,7 +84,6 @@ const LANGUAGE_DISPLAY_NAMES = {
   flutter: 'Flutter',
   cpp: 'C++',
   c: 'C',
-  all: 'All Languages'
 };
 
 export interface LanguageSelectorProps {
@@ -98,36 +97,14 @@ const languageOptions = Object.entries(LANGUAGE_CATEGORIES).map(([category, lang
     value: lang,
     label: LANGUAGE_DISPLAY_NAMES[lang as keyof typeof LANGUAGE_DISPLAY_NAMES] || lang,
   }))
-}))
+}));
 
 export default function LanguageSelector({ onRepositorySelect }: LanguageSelectorProps) {
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('all');
-  const theme = useMantineTheme();
-
-  const getLanguageColor = (language: string) => {
-    const colorMap: Record<string, string> = {
-      javascript: theme.colors.yellow[8],
-      typescript: theme.colors.blue[5],
-      react: theme.colors.cyan[5],
-      vue: theme.colors.green[5],
-      svelte: theme.colors.orange[5],
-      angular: theme.colors.red[5],
-      python: theme.colors.indigo[5],
-      java: theme.colors.orange[7],
-      csharp: theme.colors.grape[5],
-      go: theme.colors.blue[4],
-      rust: theme.colors.orange[6],
-      php: theme.colors.violet[5],
-      ruby: theme.colors.red[6],
-      kotlin: theme.colors.violet[6],
-      swift: theme.colors.orange[5],
-      flutter: theme.colors.blue[6],
-      cpp: theme.colors.pink[5],
-      c: theme.colors.gray[6],
-      all: theme.colors.blue[5]
-    };
-    
-    return colorMap[language] || theme.colors.gray[5];
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('javascript');
+  
+  // Helper function to get language class name
+  const getLanguageClass = (language: string, prefix: string = 'language') => {
+    return styles[`${prefix}-${language}`] || styles[`${prefix}-all`];
   };
 
   // Handle popular repo chip click
@@ -135,84 +112,70 @@ export default function LanguageSelector({ onRepositorySelect }: LanguageSelecto
     onRepositorySelect(url);
   };
 
+  // Get repositories for the current language or all languages
+  const repositoriesToDisplay = selectedLanguage === 'all'
+    ? Object.entries(POPULAR_REPOS).flatMap(([lang, repos]) => 
+        repos.map(repo => ({ ...repo, language: lang }))
+      ).slice(0, 8) // Limit to prevent too many repos
+    : (POPULAR_REPOS[selectedLanguage as keyof typeof POPULAR_REPOS] || [])
+        .map(repo => ({ ...repo, language: selectedLanguage }));
+
   return (
-    <div className={styles.repoSelectorContainer}>
-      <Group justify="space-between" align="center" mb={16}>
-        <Group gap={6}>
-          <IconRocket size={18} />
-          <Text size="sm" fw={600}>Popular Repositories</Text>
-        </Group>
-        
+    <div>
+      <Flex 
+        align="center" 
+        gap="xs" 
+        wrap="wrap"
+        justify='flex-start'
+        className={styles.selectorSentence}
+      >
+        <Flex align="center" gap={4}>
+          <IconRocket size={16} />
+          <Text component="span" size="sm">Explore popular repos for</Text>
+        </Flex>
+
         <Select
-          variant='unstyled'
-          className={styles.languageSelect}
-          placeholder="Select language"
+          className={cx(styles.inlineSelect, getLanguageClass(selectedLanguage, 'text'))}
           data={languageOptions}
           value={selectedLanguage}
           onChange={(value) => value && setSelectedLanguage(value)}
-          searchable
-          clearable={false}
-          maxDropdownHeight={400}
-          leftSection={<IconCode size={16} />}
-          styles={(theme) => ({
-            item: {
-              '&[data-selected]': {
-                backgroundColor: theme.colors.blue[5],
-              },
-            },
+          variant="unstyled"
+          size="sm"
+          rightSection={null}
+          aria-label="Select programming language"
+          styles={() => ({
             input: {
-              fontWeight: 500
-            }
+              fontWeight: 600,
+              color: 'inherit',
+              padding: '0 4px',
+            },
           })}
         />
-      </Group>
-      
-      <div className={styles.popularRepos}>
-        {selectedLanguage === 'all' 
-          ? Object.entries(POPULAR_REPOS).flatMap(([language, repos]) => 
-              repos.map((repo) => (
-                <Tooltip 
-                  key={`${language}-${repo.name}`} 
-                  label={`${LANGUAGE_DISPLAY_NAMES[language as keyof typeof LANGUAGE_DISPLAY_NAMES] || language} | ${repo.name}`}
-                  position="top"
-                  withArrow
-                >
-                  <Badge 
-                    className={styles.repoBadge}
-                    onClick={() => handlePopularRepoClick(repo.url)}
-                    style={{ backgroundColor: getLanguageColor(language) }}
-                    size="lg"
-                  >
-                    {repo.name}
-                  </Badge>
-                </Tooltip>
-              ))
-            )
-          : (POPULAR_REPOS[selectedLanguage as keyof typeof POPULAR_REPOS] || []).map((repo) => (
+        
+        <Flex gap="xs" wrap="wrap" className={styles.inlineRepos}>
+          {repositoriesToDisplay.length > 0 ? (
+            repositoriesToDisplay.map((repo) => (
               <Tooltip 
-                key={`${selectedLanguage}-${repo.name}`} 
-                label={`${LANGUAGE_DISPLAY_NAMES[selectedLanguage as keyof typeof LANGUAGE_DISPLAY_NAMES] || selectedLanguage} | ${repo.name}`}
+                key={`${repo.language}-${repo.name}`} 
+                label={`${LANGUAGE_DISPLAY_NAMES[repo.language as keyof typeof LANGUAGE_DISPLAY_NAMES] || repo.language} | ${repo.name}`}
                 position="top"
                 withArrow
               >
                 <Badge 
-                  className={styles.repoBadge}
+                  className={cx(styles.repoBadge, getLanguageClass(repo.language))}
                   onClick={() => handlePopularRepoClick(repo.url)}
-                  style={{ backgroundColor: getLanguageColor(selectedLanguage) }}
-                  size="lg"
+                  size="md"
+                  radius="md"
                 >
                   {repo.name}
                 </Badge>
               </Tooltip>
             ))
-        }
-        {selectedLanguage !== 'all' && (!POPULAR_REPOS[selectedLanguage as keyof typeof POPULAR_REPOS] || 
-          POPULAR_REPOS[selectedLanguage as keyof typeof POPULAR_REPOS].length === 0) && (
-          <Center style={{ width: '100%', padding: '20px' }}>
-            <Text c="dimmed" size="sm">No popular repositories for {LANGUAGE_DISPLAY_NAMES[selectedLanguage as keyof typeof LANGUAGE_DISPLAY_NAMES] || selectedLanguage}</Text>
-          </Center>
-        )}
-      </div>
+          ) : (
+            <Text c="dimmed" size="sm">No popular repositories available</Text>
+          )}
+        </Flex>
+      </Flex>
     </div>
   );
 } 

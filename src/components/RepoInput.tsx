@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { TextInput, Button, Group, Text, Box, Badge } from '@mantine/core';
+import { TextInput, Button, Group } from '@mantine/core';
 import { parseGitHubUrl } from '../lib/github';
 import { GitHubRepoInfo } from '../lib/types';
 import styles from '../styles/RepoInput.module.css';
@@ -63,7 +63,7 @@ export default function RepoInput({ onSubmit, isLoading = false }: RepoInputProp
   return (
     <div className={styles.container}>
       <TextInput
-        label="GitHub Repository URL"
+        aria-label="GitHub Repository URL"
         placeholder="https://github.com/owner/repo"
         value={repoUrl}
         onChange={(event) => handleChange(event.currentTarget.value)}
@@ -73,7 +73,7 @@ export default function RepoInput({ onSubmit, isLoading = false }: RepoInputProp
         data-testid="repo-url-input"
       />
       
-      {parsedRepo && (
+      {/* {parsedRepo && (
         <Box my="md" className={styles.parsedInfo}>
           <Text size="sm" c="dimmed">Parsed Repository:</Text>
           <Group gap="xs" mt={5}>
@@ -81,7 +81,7 @@ export default function RepoInput({ onSubmit, isLoading = false }: RepoInputProp
             <Badge>Repo: {parsedRepo.repo}</Badge>
           </Group>
         </Box>
-      )}
+      )} */}
       
       <Group justify="space-between" align="flex-start" mt="md">
         <LanguageSelector onRepositorySelect={handlePopularRepoSelect} />

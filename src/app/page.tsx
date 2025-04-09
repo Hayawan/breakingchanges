@@ -8,7 +8,7 @@ import RepoInput from '../components/RepoInput';
 import { ReleaseList } from '../components/ReleaseList';
 import { VersionSelector } from '../components/VersionSelector';
 import { ChangelogPreview } from '../components/ChangelogPreview';
-import { GitHubRepoInfo, GitHubRelease } from '../lib/types';
+import { GitHubRepoInfo, GitHubRelease, ProcessedReleasesResult } from '../lib/types';
 import { getReleasesBetweenVersions } from '../lib/github';
 import styles from './page.module.css';
 
@@ -17,6 +17,8 @@ export default function Home() {
   const [releases, setReleases] = useState<GitHubRelease[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasReleaseNotes, setHasReleaseNotes] = useState(true);
+  const [usingTags, setUsingTags] = useState(false);
   
   // Add state for selected releases
   const [selectedReleases, setSelectedReleases] = useState<GitHubRelease[]>([]);
@@ -39,8 +41,10 @@ export default function Home() {
         throw new Error(errorData.error || `Error ${response.status}: Failed to fetch releases`);
       }
       
-      const data: GitHubRelease[] = await response.json();
-      setReleases(data);
+      const data = await response.json() as ProcessedReleasesResult;
+      setReleases(data.releases);
+      setHasReleaseNotes(data.hasReleaseNotes);
+      setUsingTags(data.usingTags);
     } catch (err) {
       const errorMessage = err instanceof Error 
         ? err.message 
@@ -103,18 +107,26 @@ export default function Home() {
                 releases={releases} 
                 isLoading={isLoading}
                 error={error}
+                hasReleaseNotes={hasReleaseNotes}
+                usingTags={usingTags}
               />
-
-              <Paper shadow="xs" p="xl" withBorder mt="xl">
-                <Title order={2} mb="md">Select Versions</Title>
-                <VersionSelector 
-                  releases={releases}
-                  onSelect={handleVersionSelect}
-                  isLoading={isLoading}
-                />
-              </Paper>
               
-              <ChangelogPreview releases={selectedReleases} />
+              {hasReleaseNotes && (
+                <>
+                  <Paper shadow="xs" p="xl" withBorder mt="xl">
+                    <Title order={2} mb="md">Select Versions</Title>
+                    <VersionSelector 
+                      releases={releases}
+                      onSelect={handleVersionSelect}
+                      isLoading={isLoading}
+                    />
+                  </Paper>
+                  
+                  <ChangelogPreview 
+                    releases={selectedReleases} 
+                  />
+                </>
+              )}
             </>
           )}
         </Container>

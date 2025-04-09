@@ -15,6 +15,15 @@ export interface GitHubRelease {
   breaking_change?: boolean;
 }
 
+/**
+ * Result of processing releases, including information about release notes quality
+ */
+export interface ProcessedReleasesResult {
+  releases: GitHubRelease[];
+  hasReleaseNotes: boolean;
+  usingTags: boolean;
+}
+
 export interface VersionSelectorProps {
   releases: GitHubRelease[];
   onSelect: (currentVersion: string, targetVersion: string) => void;

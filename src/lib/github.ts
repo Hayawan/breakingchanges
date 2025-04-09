@@ -1,4 +1,4 @@
-import { GitHubRelease, GitHubRepoInfo } from './types';
+import { GitHubRelease, GitHubRepoInfo, ProcessedReleasesResult } from './types';
 
 /**
  * Parses a GitHub repository URL and extracts owner and repo names
@@ -43,6 +43,13 @@ export function parseGitHubUrl(url: string): GitHubRepoInfo | null {
  */
 export function getGitHubReleasesUrl(owner: string, repo: string, perPage: number = 100, page: number = 1): string {
   return `https://api.github.com/repos/${owner}/${repo}/releases?per_page=${perPage}&page=${page}`;
+}
+
+/**
+ * Constructs a GitHub API URL for tags
+ */
+export function getGitHubTagsUrl(owner: string, repo: string, perPage: number = 100, page: number = 1): string {
+  return `https://api.github.com/repos/${owner}/${repo}/tags?per_page=${perPage}&page=${page}`;
 }
 
 /**
@@ -94,13 +101,35 @@ export function detectBreakingChange(body: string): boolean {
 }
 
 /**
- * Processes releases to add the breaking_change flag
+ * Processes releases to add the breaking_change flag and check for meaningful release notes
  */
-export function processReleases(releases: GitHubRelease[]): GitHubRelease[] {
-  return releases.map(release => ({
+export function processReleases(releases: GitHubRelease[], usingTags: boolean = false): ProcessedReleasesResult {
+  // Add breaking change flags
+  const processedReleases = releases.map(release => ({
     ...release,
     breaking_change: detectBreakingChange(release.body)
   }));
+  
+  // Check if releases have meaningful notes
+  const hasReleaseNotes = releases.some(release => {
+    // Skip empty bodies
+    if (!release.body || release.body.trim() === '') return false;
+    
+    // Skip our placeholder message for tags
+    if (release.body.startsWith('This is a tag (') && release.body.endsWith('without release notes.')) return false;
+    
+    // Skip very short bodies (less than 20 chars is likely not meaningful)
+    if (release.body.trim().length < 20) return false;
+    
+    // This release has meaningful notes
+    return true;
+  });
+  
+  return {
+    releases: processedReleases,
+    hasReleaseNotes,
+    usingTags
+  };
 }
 
 /**
@@ -151,7 +180,7 @@ export function generateChangelogText(releases: GitHubRelease[]): string {
 /**
  * Fetches all releases for a GitHub repository with pagination
  */
-export async function fetchAllReleases(owner: string, repo: string): Promise<GitHubRelease[]> {
+export async function fetchAllReleases(owner: string, repo: string): Promise<ProcessedReleasesResult> {
   const perPage = 100; // Maximum per page
   let page = 1;
   let allReleases: GitHubRelease[] = [];
@@ -187,11 +216,130 @@ export async function fetchAllReleases(owner: string, repo: string): Promise<Git
     }
   }
   
+  // If no releases were found, try fetching tags instead
+  if (allReleases.length === 0) {
+    console.log(`No releases found for ${owner}/${repo}, trying tags instead...`);
+    return await fetchAllTags(owner, repo);
+  }
+  
   // Sort releases by published_at, newest first
   const sortedReleases = allReleases.sort((a, b) => 
     new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
   );
   
-  // Process releases to add breaking_change flags
-  return processReleases(sortedReleases);
+  // Process releases to add breaking_change flags and check release notes
+  return processReleases(sortedReleases, false);
+}
+
+/**
+ * Convert a GitHub tag to GitHubRelease format
+ */
+interface GitHubTag {
+  name: string;
+  commit: {
+    sha: string;
+    url: string;
+  };
+  zipball_url: string;
+  tarball_url: string;
+}
+
+/**
+ * Fetches commit details to get the date for a tag
+ */
+async function fetchCommitDetails(commitUrl: string): Promise<{ date: string }> {
+  try {
+    const headers = getGitHubApiHeaders();
+    const response = await fetch(commitUrl, { headers });
+    
+    if (!response.ok) {
+      return { date: new Date().toISOString() }; // Fallback
+    }
+    
+    const data = await response.json();
+    // Use committer date if available, or default to current date
+    return { 
+      date: data.commit?.committer?.date || data.commit?.author?.date || new Date().toISOString() 
+    };
+  } catch (error) {
+    console.error("Error fetching commit details:", error);
+    return { date: new Date().toISOString() }; // Fallback
+  }
+}
+
+/**
+ * Converts a GitHub tag to GitHubRelease format
+ */
+async function convertTagToRelease(tag: GitHubTag): Promise<GitHubRelease> {
+  // Fetch commit details to get the date
+  const { date } = await fetchCommitDetails(tag.commit.url);
+  
+  return {
+    id: parseInt(tag.commit.sha.substring(0, 8), 16) || Math.floor(Math.random() * 100000), // Generate an ID from commit SHA
+    name: tag.name,
+    tag_name: tag.name,
+    published_at: date,
+    body: `This is a tag (${tag.name}) without release notes.`,
+    draft: false,
+    prerelease: tag.name.includes('alpha') || tag.name.includes('beta') || tag.name.includes('rc'),
+    html_url: `${tag.zipball_url.split('/zipball')[0]}/releases/tag/${tag.name}`,
+    breaking_change: false, // We can't determine this from tags alone
+  };
+}
+
+/**
+ * Fetches all tags for a GitHub repository and converts them to GitHubRelease format
+ */
+export async function fetchAllTags(owner: string, repo: string): Promise<ProcessedReleasesResult> {
+  const perPage = 100; // Maximum per page
+  let page = 1;
+  let allTags: GitHubTag[] = [];
+  let hasMore = true;
+  
+  while (hasMore) {
+    const url = getGitHubTagsUrl(owner, repo, perPage, page);
+    const headers = getGitHubApiHeaders();
+    
+    const response = await fetch(url, { headers });
+    
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error(`Repository not found: ${owner}/${repo}`);
+      } else if (response.status === 403 && response.headers.get('x-ratelimit-remaining') === '0') {
+        throw new Error('GitHub API rate limit exceeded. Please try again later or add a GitHub token.');
+      } else {
+        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+      }
+    }
+    
+    const tags = await response.json() as GitHubTag[];
+    allTags = [...allTags, ...tags];
+    
+    // Check if there are more pages
+    const linkHeader = response.headers.get('link');
+    hasMore = hasNextPage(linkHeader);
+    page++;
+    
+    // Safety check - if no tags were returned, don't continue
+    if (tags.length === 0) {
+      hasMore = false;
+    }
+  }
+  
+  if (allTags.length === 0) {
+    console.log(`No tags found for ${owner}/${repo}`);
+    return { releases: [], hasReleaseNotes: false, usingTags: true };
+  }
+  
+  // Convert tags to releases format (limit to 50 most recent to avoid excessive API calls)
+  const tagsToConvert = allTags.slice(0, 50);
+  const releases = await Promise.all(tagsToConvert.map(convertTagToRelease));
+  
+  // Sort by date (newest first)
+  const sortedReleases = releases.sort((a, b) => 
+    new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
+  );
+  
+  // Process tags and mark them as such with usingTags=true
+  return processReleases(sortedReleases, true);
 } 
