@@ -1,0 +1,43 @@
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.breakingRow {
+  cursor: pointer;
+}
+
+.filterBadge {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.filterBadge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.filterNotice {
+  background-color: var(--mantine-color-yellow-0);
+  border-radius: var(--mantine-radius-sm);
+  padding: 0.5rem 1rem;
+  border-left: 3px solid var(--mantine-color-orange-5);
+  display: flex;
+  align-items: center;
+}
+
+.filterNotice p {
+  color: var(--mantine-color-gray-9);
+}
+
+.releaseRow {
+  cursor: pointer;
+}
+
+.actionsColumn {
+  text-align: right;
+}

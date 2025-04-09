@@ -1,0 +1,12 @@
+.container {
+  border-radius: var(--mantine-radius-md);
+}
+
+.breakingTag {
+  color: var(--mantine-color-red-7);
+  font-weight: 700;
+  font-size: 0.7rem;
+  background-color: var(--mantine-color-red-1);
+  padding: 0 0.5rem;
+  border-radius: var(--mantine-radius-sm);
+} 

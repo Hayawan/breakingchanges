@@ -1,0 +1,66 @@
+.header {
+  height: 56px;
+  margin-bottom: 2rem;
+  background-color: var(--mantine-color-body);
+  border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.inner {
+  height: 56px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.title {
+  margin: 0;
+  line-height: 1;
+  font-size: var(--mantine-font-size-lg);
+  font-weight: 700;
+  color: light-dark(var(--mantine-color-dark-9), var(--mantine-color-white));
+}
+
+.description {
+  font-size: var(--mantine-font-size-xs);
+  color: light-dark(var(--mantine-color-dimmed), var(--mantine-color-dark-2));
+  margin-top: 4px;
+}
+
+/* Style for action buttons */
+.header a {
+  border-radius: var(--mantine-radius-sm);
+  text-decoration: none;
+  transition: background-color 150ms ease;
+}
+
+.header a:hover {
+  background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .header {
+    height: 64px;
+  }
+  
+  .inner {
+    height: 64px;
+  }
+  
+  .title {
+    font-size: var(--mantine-font-size-xl);
+  }
+  
+  .description {
+    font-size: var(--mantine-font-size-sm);
+  }
+} 
