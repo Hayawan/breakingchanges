@@ -1,10 +1,19 @@
 'use client';
 
-import { Paper, Title, Divider, Text } from '@mantine/core';
+import { 
+  Paper, 
+  Title, 
+  Divider, 
+  Text, 
+  Accordion, 
+  Group, 
+  Badge,
+  Flex
+} from '@mantine/core';
+import { IconAlertTriangle, IconCalendar, IconTag } from '@tabler/icons-react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import { ChangelogPreviewProps } from '@/lib/types';
-import { generateChangelogText } from '@/lib/github';
 import styles from '@/styles/ChangelogPreview.module.css';
 
 export function ChangelogPreview({ releases }: ChangelogPreviewProps) {
@@ -18,12 +27,19 @@ export function ChangelogPreview({ releases }: ChangelogPreviewProps) {
       </Paper>
     );
   }
-
-  // Generate the markdown for the changelog
-  const changelog = generateChangelogText(releases);
   
   // Count breaking changes
   const breakingChangesCount = releases.filter(r => r.breaking_change).length;
+
+  // Format date function
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
 
   return (
     <Paper shadow="xs" p="xl" withBorder mt="xl" className={styles.container}>
@@ -32,7 +48,7 @@ export function ChangelogPreview({ releases }: ChangelogPreviewProps) {
         <div className={styles.stats}>
           <Text c="dimmed">{releases.length} releases included</Text>
           {breakingChangesCount > 0 && (
-            <Text c="red" fw={700}>
+            <Text c="orange" fw={700}>
               {breakingChangesCount} potential breaking {breakingChangesCount === 1 ? 'change' : 'changes'}
             </Text>
           )}
@@ -41,11 +57,52 @@ export function ChangelogPreview({ releases }: ChangelogPreviewProps) {
       
       <Divider mb="lg" />
       
-      <div className={styles.markdown}>
-        <ReactMarkdown rehypePlugins={[rehypeRaw]}>
-          {changelog}
-        </ReactMarkdown>
-      </div>
+      <Accordion variant="contained" radius="md" chevronPosition="left" className={styles.accordion}>
+        {releases.map((release) => (
+          <Accordion.Item 
+            key={release.id} 
+            value={release.tag_name}
+            className={release.breaking_change ? styles.breakingItem : ''}
+          >
+            <Accordion.Control>
+              <Group justify="space-between" wrap="nowrap">
+                <Group gap="xs">
+                  {release.breaking_change && (
+                    <IconAlertTriangle size={18} color="var(--mantine-color-orange-6)" />
+                  )}
+                  <Flex direction="column">
+                    <Group gap="xs">
+                      <IconTag size={16} />
+                      <Text fw={600}>{release.tag_name}</Text>
+                      {release.name && release.name !== release.tag_name && (
+                        <Text size="sm" c="dimmed">({release.name})</Text>
+                      )}
+                    </Group>
+                  </Flex>
+                </Group>
+                <Group gap="md">
+                  <Group gap="xs">
+                    <IconCalendar size={14} />
+                    <Text size="sm" c="dimmed">{formatDate(release.published_at)}</Text>
+                  </Group>
+                  {release.prerelease ? (
+                    <Badge color="yellow" size="sm">Pre-release</Badge>
+                  ) : (
+                    <Badge color="green" size="sm">Release</Badge>
+                  )}
+                </Group>
+              </Group>
+            </Accordion.Control>
+            <Accordion.Panel>
+              <div className={styles.releaseContent}>
+                <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                  {release.body || 'No release notes provided.'}
+                </ReactMarkdown>
+              </div>
+            </Accordion.Panel>
+          </Accordion.Item>
+        ))}
+      </Accordion>
     </Paper>
   );
 } 

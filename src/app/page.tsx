@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Container, Paper, Title, Text, Alert, Group, Button } from '@mantine/core';
 import { IconEdit } from '@tabler/icons-react';
 import { Header } from '../components/Header';
-import { RepoInput } from '../components/RepoInput';
+import RepoInput from '../components/RepoInput';
 import { ReleaseList } from '../components/ReleaseList';
 import { VersionSelector } from '../components/VersionSelector';
 import { ChangelogPreview } from '../components/ChangelogPreview';

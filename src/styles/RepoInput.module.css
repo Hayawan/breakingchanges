@@ -1,30 +1,71 @@
 .container {
-  margin-bottom: 0rem;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .input {
-  width: 100%;
+  margin-bottom: 15px;
 }
 
 .parsedInfo {
-  background-color: var(--gray-alpha-100);
-  border-radius: var(--mantine-radius-md);
-  padding: 0.75rem;
-  border: 1px solid var(--gray-alpha-200);
+  background-color: var(--mantine-color-dark-6);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--mantine-color-dark-4);
+  transition: all 0.2s ease;
 }
 
 .popularRepos {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
+  margin-top: 8px;
 }
 
 .repoBadge {
   cursor: pointer;
   transition: all 0.2s ease;
+  border-radius: 20px;
+  padding: 8px 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .repoBadge:hover {
   transform: translateY(-2px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.repoSelectorContainer {
+  background-color: var(--mantine-color-dark-7);
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid var(--mantine-color-dark-5);
+  min-width: 65%;
+}
+
+.languageSelect {
+  width: 150px;
+  margin-left: auto;
+}
+
+.languageSelect :global(.mantine-Select-input) {
+  border-radius: 20px;
+  transition: all 0.2s ease;
+  border: 1px solid var(--mantine-color-dark-4);
+}
+
+.languageSelect :global(.mantine-Select-input:focus) {
+  border-color: var(--mantine-color-blue-5);
+  box-shadow: 0 0 0 2px rgba(25, 113, 194, 0.2);
+}
+
+@media (max-width: 768px) {
+  .repoSelectorContainer {
+    width: 100%;
+  }
+  
+  .languageSelect {
+    width: 120px;
+  }
 } 

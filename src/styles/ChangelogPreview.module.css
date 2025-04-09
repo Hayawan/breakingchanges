@@ -16,32 +16,46 @@
   gap: 0.25rem;
 }
 
-.markdown {
-  padding: 1.5rem;
-  border-radius: var(--mantine-radius-md);
-  max-height: 600px;
+.accordion {
+  width: 100%;
+}
+
+.breakingItem {
+  border-left: 3px solid var(--mantine-color-orange-6);
+}
+
+.releaseContent {
+  padding: 1rem 0;
+  max-height: 500px;
   overflow-y: auto;
 }
 
-.markdown h2 {
+/* Markdown styles applied to release content */
+.releaseContent h1, 
+.releaseContent h2, 
+.releaseContent h3, 
+.releaseContent h4 {
   border-bottom: 1px solid var(--mantine-color-gray-3);
   padding-bottom: 0.5rem;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   margin-bottom: 1rem;
 }
 
-.markdown h2:first-child {
+.releaseContent h1:first-child, 
+.releaseContent h2:first-child, 
+.releaseContent h3:first-child, 
+.releaseContent h4:first-child {
   margin-top: 0;
 }
 
-.markdown pre {
+.releaseContent pre {
   background-color: var(--mantine-color-gray-8);
   padding: 1rem;
   border-radius: var(--mantine-radius-sm);
   overflow-x: auto;
 }
 
-.markdown code {
+.releaseContent code {
   background-color: color-mix(in srgb, var(--mantine-color-red-9) 50%, transparent);
   padding: 0.1rem 0.2rem;
   border-radius: var(--mantine-radius-sm);
@@ -49,16 +63,23 @@
   font-size: 0.9em;
 }
 
-.markdown ul, .markdown ol {
+.releaseContent ul, 
+.releaseContent ol {
   padding-left: 2rem;
   margin: 1rem 0;
 }
 
-.markdown a {
+.releaseContent a {
   color: var(--mantine-color-blue-6);
   text-decoration: none;
 }
 
-.markdown a:hover {
+.releaseContent a:hover {
   text-decoration: underline;
+}
+
+/* Add space between items */
+.releaseContent p {
+  margin-bottom: 1rem;
+  line-height: 1.5;
 } 

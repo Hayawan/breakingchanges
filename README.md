@@ -1,6 +1,6 @@
 # Breaking Changes
 
-A tool to identify breaking changes between release versions of a GitHub repository.
+A tool to identify breaking changes between release versions of a public GitHub repository.
 
 ## Overview
 
