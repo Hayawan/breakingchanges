@@ -66,7 +66,7 @@ export function VersionSelector({
     <Box className={styles.container}>
       <Text mb="md">Choose a range of versions to see what’s changed</Text>
       
-      <Group grow>
+      <Group grow className={styles.versionSelectorContainer}>
         <Select
           label="What version are you using now?"
           placeholder="Your current version"
@@ -102,6 +102,7 @@ export function VersionSelector({
       
       <Group justify="center" mt="xl">
         <Button 
+          className={styles.mainButton}
           onClick={handleSubmit} 
           disabled={!isValidSelection || isLoading}
           loading={isLoading}

@@ -168,8 +168,9 @@
 }
 
 /* New inline selector styles */
-.selectorSentence {
+.selectorContainer {
   margin-bottom: 8px;
+  gap: 8px;
 }
 
 .inlineSelect {
@@ -221,22 +222,34 @@
   box-shadow: 0 0 0 2px rgba(25, 113, 194, 0.2);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .repoSelectorContainer {
     width: 100%;
   }
   
-  .languageSelect {
-    width: 120px;
-  }
-  
-  .selectorSentence {
+  .selectorContainer {
     flex-direction: column;
     align-items: flex-start;
+    width: 100%;
+    gap: 0;
+  }
+
+  .selectorSentence {
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-evenly;
+  }
+
+  .inlineSelect {
+    width: max-content;
   }
   
   .inlineRepos {
-    margin-top: 8px;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .mainButton {
     width: 100%;
   }
 } 

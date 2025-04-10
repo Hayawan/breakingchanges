@@ -114,11 +114,6 @@ a.secondary {
 }
 
 @media (max-width: 600px) {
-  .page {
-    padding: 32px;
-    padding-bottom: 80px;
-  }
-
   .main {
     align-items: center;
   }
@@ -129,6 +124,10 @@ a.secondary {
 
   .ctas {
     flex-direction: column;
+  }
+
+  .mainButton {
+    width: 100%;
   }
 
   .ctas a {

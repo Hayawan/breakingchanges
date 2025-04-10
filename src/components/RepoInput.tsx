@@ -91,6 +91,7 @@ export default function RepoInput({ onSubmit, isLoading = false }: RepoInputProp
           loading={isLoading}
           disabled={!parsedRepo || isLoading}
           data-testid="fetch-releases-button"
+          className={styles.mainButton}
         >
           Fetch Releases
         </Button>

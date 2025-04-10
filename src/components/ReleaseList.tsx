@@ -43,7 +43,7 @@ export function ReleaseList({ releases, repoInfo, isLoading, error, hasReleaseNo
     if (!hasInteracted) {
       const timer = setTimeout(() => {
         setShowTooltip(false);
-      }, 10000);
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [hasInteracted]);
@@ -107,7 +107,7 @@ export function ReleaseList({ releases, repoInfo, isLoading, error, hasReleaseNo
         <Title order={2}>
           Releases for {repoInfo.owner}/{repoInfo.repo}
         </Title>
-        <Group>
+        <Flex direction="column" align="flex-end" gap="xs" className={styles.releaseListStats}>
           <Text c="dimmed">
             {showOnlyBreaking 
               ? `Showing ${displayedReleases.length} of ${releases.length} releases` 
@@ -138,7 +138,7 @@ export function ReleaseList({ releases, repoInfo, isLoading, error, hasReleaseNo
               </Badge>
             </Tooltip>
           )}
-        </Group>
+        </Flex>
       </Group>
       
       <Divider mb="md" />
@@ -169,7 +169,7 @@ export function ReleaseList({ releases, repoInfo, isLoading, error, hasReleaseNo
       )}
       
       <ScrollArea h={500} type="auto">
-        <Table striped highlightOnHover stickyHeader captionSide="top" >
+        <Table striped highlightOnHover captionSide="top" >
         <Table.Caption>Scroll through the table to see all releases</Table.Caption>
           <Table.Thead>
             <Table.Tr>

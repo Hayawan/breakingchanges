@@ -124,33 +124,32 @@ export default function LanguageSelector({ onRepositorySelect }: LanguageSelecto
     <div>
       <Flex 
         align="center" 
-        gap="xs" 
         wrap="wrap"
         justify='flex-start'
-        className={styles.selectorSentence}
+        className={styles.selectorContainer}
       >
-        <Flex align="center" gap={4}>
+        <Flex align="center" gap={4} justify="flex-start" className={styles.selectorSentence}>
           <IconRocket size={16} />
           <Text component="span" size="sm">Explore popular repos for</Text>
-        </Flex>
 
-        <Select
-          className={cx(styles.inlineSelect, getLanguageClass(selectedLanguage, 'text'))}
-          data={languageOptions}
-          value={selectedLanguage}
-          onChange={(value) => value && setSelectedLanguage(value)}
-          variant="unstyled"
-          size="sm"
-          rightSection={null}
-          aria-label="Select programming language"
-          styles={() => ({
-            input: {
-              fontWeight: 600,
-              color: 'inherit',
-              padding: '0 4px',
-            },
-          })}
-        />
+          <Select
+            className={cx(styles.inlineSelect, getLanguageClass(selectedLanguage, 'text'))}
+            data={languageOptions}
+            value={selectedLanguage}
+            onChange={(value) => value && setSelectedLanguage(value)}
+            variant="unstyled"
+            size="sm"
+            rightSection={null}
+            aria-label="Select programming language"
+            styles={() => ({
+              input: {
+                fontWeight: 600,
+                color: 'inherit',
+                padding: '0 4px',
+              },
+            })}
+          />
+        </Flex>
         
         <Flex gap="xs" wrap="wrap" className={styles.inlineRepos}>
           {repositoriesToDisplay.length > 0 ? (

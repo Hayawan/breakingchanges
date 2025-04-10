@@ -103,6 +103,7 @@ export default function Home() {
                   <Text fw={600} size="lg">{repoInfo?.owner}/{repoInfo?.repo}</Text>
                 </div>
                 <Button
+                  className={styles.mainButton}
                   onClick={() => setIsInputExpanded(true)}
                   leftSection={<IconEdit size={16} />}
                   variant="light"

@@ -64,3 +64,10 @@
     font-size: var(--mantine-font-size-sm);
   }
 } 
+
+@media (max-width: 600px) {
+  .description {
+    display: none;
+  }
+  
+}

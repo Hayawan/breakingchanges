@@ -150,7 +150,7 @@ With thoughtful planning, good tooling, and smart prioritization, upgrading depe
         </div>
       </Modal>
 
-      <Group gap="xs">
+      <Group gap="xs" className={styles.helpLinkContainer}>
         <IconHelp size={16} />
         <Anchor 
           component="button" 
@@ -158,7 +158,8 @@ With thoughtful planning, good tooling, and smart prioritization, upgrading depe
           onClick={open}
           className={styles.helpLink}
         >
-          Not sure where to start? Read some best practices for upgrading dependencies
+          <span className={styles.helpTextDesktop}>Not sure where to start? Read some best practices for upgrading dependencies</span>
+          <span className={styles.helpTextMobile}>Upgrade Guide</span>
         </Anchor>
       </Group>
     </>

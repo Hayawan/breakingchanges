@@ -54,3 +54,16 @@
   line-height: 1.5;
   margin-top: 0.25rem;
 }
+
+@media (max-width: 600px) {
+  .warningAlert {
+    margin: 0 0.5rem 1rem 0.5rem;
+  }
+
+  .releaseListStats {
+    flex-direction: row-reverse !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+}

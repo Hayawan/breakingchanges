@@ -73,3 +73,33 @@
   margin: 1rem 0;
   color: var(--mantine-color-gray-7);
 } 
+
+.helpTextDesktop {
+  display: inline-block;
+}
+
+.helpTextMobile {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .helpLinkContainer {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .helpLink {
+    flex: 1;
+    text-align: left;
+    width: max-content;
+  }
+
+  .helpTextDesktop {
+    display: none;
+  }
+
+  .helpTextMobile {
+    display: inline-block;
+  }
+}
