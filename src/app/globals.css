@@ -27,3 +27,28 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+pre {
+  background-color: light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-8));
+  color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-dark-1));
+  padding: 1rem;
+  border-radius: var(--mantine-radius-sm);
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+code {
+  background-color: color-mix(in srgb, light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-7)) 50%, transparent);
+  color: light-dark(var(--mantine-color-red-7), var(--mantine-color-teal-2));
+  border: 1px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-4));
+  padding: 0.15rem 0.25rem;
+  border-radius: var(--mantine-radius-sm);
+  font-family: var(--font-geist-mono);
+  font-size: 0.85em;
+}
+
+pre code {
+  background-color: transparent;
+  color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-4));
+  border: none;
+}

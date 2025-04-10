@@ -36,6 +36,24 @@
   margin-bottom: 1rem;
 }
 
+.helpLink {
+  color: var(--mantine-color-blue-6);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.helpLink:hover {
+  color: var(--mantine-color-blue-7);
+  text-decoration: underline;
+}
+
+.modalContent {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
 /* Markdown styles applied to release content */
 .releaseContent h1, 
 .releaseContent h2, 
@@ -52,31 +70,6 @@
 .releaseContent h3:first-child, 
 .releaseContent h4:first-child {
   margin-top: 0;
-}
-
-.releaseContent pre {
-  background-color: light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-8));
-  color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-dark-1));
-  padding: 1rem;
-  border-radius: var(--mantine-radius-sm);
-  overflow-x: auto;
-  margin: 1rem 0;
-}
-
-.releaseContent code {
-  background-color: color-mix(in srgb, light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-7)) 50%, transparent);
-  color: light-dark(var(--mantine-color-red-7), var(--mantine-color-teal-2));
-  border: 1px solid light-dark(var(--mantine-color-gray-5), var(--mantine-color-dark-4));
-  padding: 0.15rem 0.25rem;
-  border-radius: var(--mantine-radius-sm);
-  font-family: var(--font-geist-mono);
-  font-size: 0.85em;
-}
-
-.releaseContent pre code {
-  background-color: transparent;
-  color: light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-4));
-  border: none;
 }
 
 .releaseContent ul, 
@@ -98,4 +91,4 @@
 .releaseContent p {
   margin-bottom: 1rem;
   line-height: 1.5;
-} 
+}

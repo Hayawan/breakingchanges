@@ -8,13 +8,15 @@ import {
   Accordion, 
   Group, 
   Badge,
-  Flex
+  Flex,
+  Box
 } from '@mantine/core';
 import { IconAlertTriangle, IconCalendar, IconTag } from '@tabler/icons-react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import { ChangelogPreviewProps } from '@/lib/types';
 import styles from '@/styles/ChangelogPreview.module.css';
+import { UpgradeGuideModal } from './UpgradeGuideModal';
 
 export function ChangelogPreview({ releases }: ChangelogPreviewProps) {
   // If no releases, show a message
@@ -44,7 +46,10 @@ export function ChangelogPreview({ releases }: ChangelogPreviewProps) {
   return (
     <Paper shadow="xs" p="xl" withBorder mt="xl" className={styles.container}>
       <div className={styles.header}>
-        <Title order={3}>Changelog Preview</Title>
+        <Flex gap="0.25rem" direction="column">
+          <Title order={3}>Changelog Preview</Title>
+          <UpgradeGuideModal />
+        </Flex>
         <div className={styles.stats}>
           <Text c="dimmed">{releases.length} releases included</Text>
           {breakingChangesCount > 0 && (

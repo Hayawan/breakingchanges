@@ -114,7 +114,7 @@ export default function Home() {
               {hasReleaseNotes && (
                 <>
                   <Paper shadow="xs" p="xl" withBorder mt="xl">
-                    <Title order={2} mb="md">Select Versions</Title>
+                    <Title order={2} mb="md">Compare Releases</Title>
                     <VersionSelector 
                       releases={releases}
                       onSelect={handleVersionSelect}

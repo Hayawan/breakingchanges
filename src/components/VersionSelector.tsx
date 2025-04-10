@@ -64,12 +64,12 @@ export function VersionSelector({
 
   return (
     <Box className={styles.container}>
-      <Text mb="md">Select a version range to compare</Text>
+      <Text mb="md">Choose a range of versions to see what’s changed</Text>
       
       <Group grow>
         <Select
-          label="Current Version"
-          placeholder="Select your current version"
+          label="What version are you using now?"
+          placeholder="Your current version"
           data={currentVersionOptions.map(opt => ({
             value: opt.value,
             label: opt.label,
@@ -84,8 +84,8 @@ export function VersionSelector({
         />
         
         <Select
-          label="Target Version"
-          placeholder="Select your target version"
+          label="What version are you upgrading to?"
+          placeholder="Your target version"
           data={targetVersionOptions.map(opt => ({
             value: opt.value,
             label: opt.label,
@@ -106,7 +106,7 @@ export function VersionSelector({
           disabled={!isValidSelection || isLoading}
           loading={isLoading}
         >
-          Compare Versions
+          Show Changes
         </Button>
       </Group>
     </Box>

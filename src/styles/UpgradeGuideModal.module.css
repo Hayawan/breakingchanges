@@ -1,0 +1,75 @@
+/* Modal content styles */
+.modalContent h1, 
+.modalContent h2, 
+.modalContent h3, 
+.modalContent h4 {
+  padding-bottom: 0.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.modalContent h1,
+.modalContent h2 {
+  border-bottom: 1px solid var(--mantine-color-gray-3);
+}
+
+.modalContent h1:first-child, 
+.modalContent h2:first-child, 
+.modalContent h3:first-child, 
+.modalContent h4:first-child {
+  margin-top: 0;
+}
+
+.modalContent ul, 
+.modalContent ol {
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+.modalContent a {
+  color: var(--mantine-color-blue-6);
+  text-decoration: none;
+}
+
+.modalContent a:hover {
+  text-decoration: underline;
+}
+
+.modalContent p {
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+/* Help link styles */
+.helpLink {
+  color: var(--mantine-color-blue-6);
+  text-decoration: none;
+  font-size: var(--mantine-font-size-sm);
+  margin-bottom: 0;
+}
+
+.helpLink:hover {
+  text-decoration: underline;
+}
+
+/* Modal container styles */
+.modalContent {
+  padding: var(--mantine-spacing-md);
+}
+
+/* List item styles */
+.modalContent li {
+  margin-bottom: 0.5rem;
+}
+
+.modalContent li:last-child {
+  margin-bottom: 0;
+}
+
+/* Blockquote styles */
+.modalContent blockquote {
+  border-left: 4px solid var(--mantine-color-gray-3);
+  padding-left: var(--mantine-spacing-md);
+  margin: 1rem 0;
+  color: var(--mantine-color-gray-7);
+} 

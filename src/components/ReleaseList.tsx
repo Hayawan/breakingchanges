@@ -18,7 +18,7 @@ import {
 } from '@mantine/core';
 import { IconCalendar, IconExternalLink, IconTag, IconAlertTriangle, IconFilter, IconFilterOff, IconInfoCircle } from '@tabler/icons-react';
 import { GitHubRelease, GitHubRepoInfo } from '@/lib/types';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from '@/styles/ReleaseList.module.css';
 
 interface ReleaseListProps {
@@ -33,6 +33,20 @@ interface ReleaseListProps {
 export function ReleaseList({ releases, repoInfo, isLoading, error, hasReleaseNotes = true, usingTags = false }: ReleaseListProps) {
   // State to track whether to show only breaking changes
   const [showOnlyBreaking, setShowOnlyBreaking] = useState(false);
+  // State to track whether the user has interacted with the badge
+  const [hasInteracted, setHasInteracted] = useState(false);
+  // State to control tooltip visibility
+  const [showTooltip, setShowTooltip] = useState(true);
+
+  // Hide tooltip after 10 seconds on initial render
+  useEffect(() => {
+    if (!hasInteracted) {
+      const timer = setTimeout(() => {
+        setShowTooltip(false);
+      }, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [hasInteracted]);
 
   if (isLoading) {
     return (
@@ -83,6 +97,8 @@ export function ReleaseList({ releases, repoInfo, isLoading, error, hasReleaseNo
   // Toggle the breaking changes filter
   const toggleBreakingFilter = () => {
     setShowOnlyBreaking(!showOnlyBreaking);
+    setHasInteracted(true);
+    setShowTooltip(false);
   };
 
   return (
@@ -98,18 +114,29 @@ export function ReleaseList({ releases, repoInfo, isLoading, error, hasReleaseNo
               : `${releases.length} releases found`}
           </Text>
           {breakingChangesCount > 0 && (
-            <Badge 
-              color={showOnlyBreaking ? "orange" : "red"} 
-              leftSection={showOnlyBreaking 
-                ? <IconFilterOff size={14} /> 
-                : <IconAlertTriangle size={14} />
-              }
-              className={styles.filterBadge}
-              onClick={toggleBreakingFilter}
+            <Tooltip
+              label="Only want versions with breaking changes? Click here."
+              position="top"
+              opened={showTooltip}
+              withArrow
+              arrowSize={6}
+              transitionProps={{ duration: 200 }}
             >
-              {breakingChangesCount} breaking {breakingChangesCount === 1 ? 'change' : 'changes'}
-              {showOnlyBreaking && ' (filtered)'}
-            </Badge>
+              <Badge 
+                color={showOnlyBreaking ? "orange" : "red"} 
+                leftSection={showOnlyBreaking 
+                  ? <IconFilterOff size={14} /> 
+                  : <IconAlertTriangle size={14} />
+                }
+                className={styles.filterBadge}
+                onClick={toggleBreakingFilter}
+                onMouseEnter={() => !hasInteracted && setShowTooltip(true)}
+                onMouseLeave={() => !hasInteracted && setShowTooltip(false)}
+              >
+                {breakingChangesCount} breaking {breakingChangesCount === 1 ? 'change' : 'changes'}
+                {showOnlyBreaking && ' (filtered)'}
+              </Badge>
+            </Tooltip>
           )}
         </Group>
       </Group>
@@ -119,17 +146,16 @@ export function ReleaseList({ releases, repoInfo, isLoading, error, hasReleaseNo
       {/* Warning for repositories without meaningful release notes */}
       {!hasReleaseNotes && (
         <Alert 
-          color="orange"
-          variant='light'
-          title={usingTags ? "Tags detected — not formal releases" : "Limited release notes available"}
+          color="yellow" 
+          title={usingTags ? "Using tags instead of releases" : "Limited release notes"}
           icon={<IconInfoCircle size={16} />}
           mb="md"
           mx="md"
           className={styles.warningAlert}
         >
           {usingTags 
-            ? "This repository uses Git tags instead of formal releases. Release notes may be missing or incomplete. Version selection and changelog preview are unavailable. For accurate information, refer to the project's official documentation."
-            : "This repository has limited release notes. Breaking changes may be missed. Version selection and changelog preview are unavailable. For more details, check the project's official documentation."}
+            ? "This repository uses tags instead of formal releases. Release notes may be limited or unavailable. Version selection and changelog preview are disabled."
+            : "This repository has limited or no detailed release notes. Breaking changes may not be accurately detected. Version selection and changelog preview are disabled."}
         </Alert>
       )}
       
@@ -137,13 +163,13 @@ export function ReleaseList({ releases, repoInfo, isLoading, error, hasReleaseNo
         <Box mb="md" className={styles.filterNotice}>
           <Text size="sm">
             <IconFilter size={14} style={{ marginRight: '4px' }} />
-            Showing only releases with breaking changes. Click the badge again to show all releases.
+            Showing releases that have breaking changes. Click the badge again to show all releases.
           </Text>
         </Box>
       )}
       
       <ScrollArea h={500} type="auto">
-        <Table striped highlightOnHover captionSide="top">
+        <Table striped highlightOnHover stickyHeader captionSide="top" >
         <Table.Caption>Scroll through the table to see all releases</Table.Caption>
           <Table.Thead>
             <Table.Tr>
