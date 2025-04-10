@@ -32,4 +32,36 @@ export interface VersionSelectorProps {
 
 export interface ChangelogPreviewProps {
   releases: GitHubRelease[];
+}
+
+export interface ReleaseContext {
+  version: string;
+  name: string;
+  published_at: string;
+  breaking_change_detected: boolean;
+  body: string;
+}
+
+export interface AnalyzeBreakingChangesRequest {
+  // Original flat changelogs string (kept for backward compatibility)
+  changelogs?: string;
+  // Enhanced structured release context
+  releaseContext?: ReleaseContext[];
+  repoInfo: GitHubRepoInfo;
+  versionInfo: {
+    currentVersion: string;
+    targetVersion: string;
+  };
+}
+
+export interface AnalyzeBreakingChangesResponse {
+  result: string;
+}
+
+export interface TechDebtSpecificationProps {
+  releases: GitHubRelease[];
+  repoInfo: GitHubRepoInfo;
+  currentVersion: string;
+  targetVersion: string;
+  changelogs: string;
 } 

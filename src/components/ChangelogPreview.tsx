@@ -9,7 +9,6 @@ import {
   Group, 
   Badge,
   Flex,
-  Box
 } from '@mantine/core';
 import { IconAlertTriangle, IconCalendar, IconTag } from '@tabler/icons-react';
 import ReactMarkdown from 'react-markdown';

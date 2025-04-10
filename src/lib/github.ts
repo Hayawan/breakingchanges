@@ -1,4 +1,4 @@
-import { GitHubRelease, GitHubRepoInfo, ProcessedReleasesResult } from './types';
+import { GitHubRelease, GitHubRepoInfo, ProcessedReleasesResult, ReleaseContext } from './types';
 
 /**
  * Parses a GitHub repository URL and extracts owner and repo names
@@ -342,4 +342,38 @@ export async function fetchAllTags(owner: string, repo: string): Promise<Process
   
   // Process tags and mark them as such with usingTags=true
   return processReleases(sortedReleases, true);
+}
+
+export function aggregateChangelogs(releases: GitHubRelease[]): string {
+  // Sort releases chronologically (oldest to newest)
+  const sortedReleases = [...releases].sort((a, b) => 
+    new Date(a.published_at).getTime() - new Date(b.published_at).getTime()
+  );
+  
+  // Extract and join changelog content
+  return sortedReleases.map(release => {
+    const tagName = release.tag_name || release.name || 'Unknown version';
+    const body = release.body || 'No release notes available';
+    
+    return `## ${tagName}\n\n${body}\n`;
+  }).join('\n\n---\n\n');
+}
+
+/**
+ * Converts GitHubRelease objects to structured ReleaseContext format
+ * for enhanced LLM analysis
+ */
+export function createReleaseContext(releases: GitHubRelease[]): ReleaseContext[] {
+  // Sort releases chronologically (oldest to newest)
+  const sortedReleases = [...releases].sort((a, b) => 
+    new Date(a.published_at).getTime() - new Date(b.published_at).getTime()
+  );
+  
+  return sortedReleases.map(release => ({
+    version: release.tag_name,
+    name: release.name || release.tag_name,
+    published_at: release.published_at,
+    breaking_change_detected: !!release.breaking_change,
+    body: release.body || 'No release notes available'
+  }));
 } 

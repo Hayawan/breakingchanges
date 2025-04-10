@@ -9,8 +9,9 @@ import RepoInput from '../components/RepoInput';
 import { ReleaseList } from '../components/ReleaseList';
 import { VersionSelector } from '../components/VersionSelector';
 import { ChangelogPreview } from '../components/ChangelogPreview';
+import { TechDebtSpecification } from '../components/TechDebtSpecification';
 import { GitHubRepoInfo, GitHubRelease, ProcessedReleasesResult } from '../lib/types';
-import { getReleasesBetweenVersions } from '../lib/github';
+import { getReleasesBetweenVersions, aggregateChangelogs } from '../lib/github';
 import styles from './page.module.css';
 
 export default function Home() {
@@ -24,6 +25,10 @@ export default function Home() {
   // Add state for selected releases
   const [selectedReleases, setSelectedReleases] = useState<GitHubRelease[]>([]);
   const [isInputExpanded, setIsInputExpanded] = useState(true);
+  
+  // Add state for version selection
+  const [currentVersionValue, setCurrentVersionValue] = useState<string>('');
+  const [targetVersionValue, setTargetVersionValue] = useState<string>('');
   
   // Handle repository submission
   const handleRepoSubmit = async (repo: GitHubRepoInfo) => {
@@ -62,7 +67,14 @@ export default function Home() {
   const handleVersionSelect = (currentVersion: string, targetVersion: string) => {
     const filteredReleases = getReleasesBetweenVersions(releases, currentVersion, targetVersion);
     setSelectedReleases(filteredReleases);
+    setCurrentVersionValue(currentVersion);
+    setTargetVersionValue(targetVersion);
   };
+
+  // Generate changelogs text for the selected releases
+  const selectedChangelogs = selectedReleases.length > 0
+    ? aggregateChangelogs(selectedReleases)
+    : '';
 
   return (
     <div className={styles.page}>
@@ -126,6 +138,16 @@ export default function Home() {
                   <ChangelogPreview 
                     releases={selectedReleases} 
                   />
+                  
+                  {selectedReleases.length > 0 && repoInfo && currentVersionValue && targetVersionValue && (
+                    <TechDebtSpecification
+                      releases={selectedReleases}
+                      repoInfo={repoInfo}
+                      currentVersion={currentVersionValue}
+                      targetVersion={targetVersionValue}
+                      changelogs={selectedChangelogs}
+                    />
+                  )}
                 </>
               )}
             </>

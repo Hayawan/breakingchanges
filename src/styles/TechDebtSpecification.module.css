@@ -1,0 +1,72 @@
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.markdownContainer {
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: 1rem;
+}
+
+.markdownContainer h1 {
+  font-size: 1.5rem;
+  margin-top: 0;
+}
+
+.markdownContainer h2 {
+  font-size: 1.25rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.markdownContainer h3 {
+  font-size: 1.1rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.markdownContainer ul, 
+.markdownContainer ol {
+  margin-bottom: 1rem;
+  padding-left: 1.5rem;
+}
+
+.markdownContainer li {
+  margin-bottom: 0.25rem;
+}
+
+.markdownContainer blockquote {
+  border-left: 4px solid var(--mantine-color-gray-3);
+  padding-left: 1rem;
+  margin-left: 0;
+  color: var(--mantine-color-gray-7);
+}
+
+.markdownContainer table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.markdownContainer th,
+.markdownContainer td {
+  border: 1px solid var(--mantine-color-gray-3);
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.markdownContainer th {
+  background-color: var(--mantine-color-gray-0);
+  font-weight: bold;
+}
+
+/* Style for dark mode */
+[data-mantine-color-scheme="dark"] .markdownContainer pre,
+[data-mantine-color-scheme="dark"] .markdownContainer code {
+  background-color: var(--mantine-color-dark-7);
+} 
