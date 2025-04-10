@@ -23,7 +23,12 @@ export function ChangelogPreview({ releases }: ChangelogPreviewProps) {
   if (releases.length === 0) {
     return (
       <Paper shadow="xs" p="xl" withBorder mt="xl">
-        <Title order={3} mb="md">Changelog Preview</Title>
+        <div className={styles.header}>
+          <Flex gap="0.25rem" direction="column">
+            <Title order={3}>Changelog Preview</Title>
+            <UpgradeGuideModal />
+          </Flex>
+        </div>
         <Divider mb="lg" />
         <Text c="dimmed" ta="center">No releases selected. Please select a version range to view the changelog.</Text>
       </Paper>

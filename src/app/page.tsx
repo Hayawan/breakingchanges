@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Container, Paper, Title, Text, Alert, Group, Button } from '@mantine/core';
 import { IconEdit } from '@tabler/icons-react';
 import { Header } from '../components/Header';
+import { Footer } from '../components/Footer';
 import RepoInput from '../components/RepoInput';
 import { ReleaseList } from '../components/ReleaseList';
 import { VersionSelector } from '../components/VersionSelector';
@@ -131,6 +132,7 @@ export default function Home() {
           )}
         </Container>
       </main>
+      <Footer />
     </div>
   );
 }

@@ -168,8 +168,9 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "1a5a3c13345ad85a",
+  "active": "5ac0bf563f54d33f",
   "lastOpenFiles": [
+    "project/tickets/2025-04-09-openai-assistant-integration.md",
     "project/tickets/2025-04-08-version-selection-ui.md",
     "project/tickets/2025-04-08-github-api-integration.md",
     "project/tickets/2025-04-08-github-repo-url-parsing.md",
