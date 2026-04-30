@@ -1,83 +1,85 @@
 # Breaking Changes
 
-A tool to identify breaking changes between release versions of a public GitHub repository.
+Identify breaking changes between two versions of a public GitHub repository — fetch the releases, scan the bodies, and generate a tech-debt specification with the LLM provider of your choice.
 
-## Overview
+🌐 **Live:** [breakingchanges.ai](https://breakingchanges.ai)
 
-Breaking Changes helps developers understand what has changed between different versions of a repository, with a focus on identifying and explaining breaking changes that might affect their upgrade process.
+## What it does
 
-## Features
+1. Paste a GitHub repo URL.
+2. Pick a current version and a target version.
+3. Review the aggregated changelog between them.
+4. Optionally run an AI analysis that produces a markdown tech-debt spec — categorizing breaking changes (API / Behavior / Dependencies / Security / Tooling), proposing an upgrade path, and rating complexity.
 
-- 🔍 GitHub Repo URL parsing and validation
-- 📋 Fetch and display releases from GitHub API
-- 📊 Select and compare different release versions
-- ⚠️ Highlight releases with potential breaking changes
-- 📝 Generate changelog between selected versions
-- 🔮 (Coming soon) AI-powered breaking change summarization
+## Bring your own key
 
-## Getting Started
+Breaking Changes is a **bring-your-own-key** (BYOK) service. We do not host an LLM key on your behalf, and we do not charge you. You supply a key from one of the supported providers and pay them directly for whatever the analysis costs.
 
-### Prerequisites
+Supported providers:
 
-- Node.js 18+
-- pnpm (recommended) or npm
+| Provider  | Key prefix     | Get a key |
+|-----------|----------------|-----------|
+| OpenAI    | `sk-…`         | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) |
+| Anthropic | `sk-ant-…`     | [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys) |
+| Google    | `AIza…`        | [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey) |
+| Mistral   | (no prefix)    | [console.mistral.ai/api-keys](https://console.mistral.ai/api-keys/) |
 
-### Installation
+A GitHub fine-grained PAT is also optional — paste one in to lift the 60 req/hr unauthenticated rate limit on `api.github.com`.
+
+### How keys are handled
+
+- **Default storage is `sessionStorage`** — keys live in your browser tab and are wiped when you close it.
+- **`localStorage` is opt-in** per provider with a "Remember on this device" toggle. Persisted keys are auto-cleared after **24 hours of inactivity** on tab focus.
+- **The server is a transit proxy.** When you run an analysis, your key is sent in an `Authorization` header, immediately forwarded to the provider you chose, and discarded. Nothing is persisted server-side. Error logs strip known key prefixes before writing.
+- **Clear any key (or all keys) at any time** from the in-app settings drawer.
+
+### Scoping your key
+
+Use the most narrowly scoped key your provider supports — set a low spend cap, restrict it to one project / workspace, and revoke it if anything looks off.
+
+- **OpenAI** — create a *Project*, scope the key to it, and set a project usage limit.
+- **Anthropic** — create a *Workspace* and a workspace-scoped key.
+- **Google AI Studio** — create an API key; note that referrer-based restrictions don't apply through this app's proxy.
+- **Mistral** — workspace key with a budget limit.
+
+If you suspect compromise: revoke immediately at the provider console linked above.
+
+## Run it locally
+
+Most privacy-preserving option. Self-host gets you the same UI without any third party in the loop.
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/breakingchanges.git
+git clone https://github.com/Hayawan/breakingchanges.git
 cd breakingchanges
-
-# Install dependencies
 pnpm install
+pnpm dev
+# open http://localhost:3000
 ```
 
-### Running the Development Server
+You can either paste keys into the in-app settings drawer (same UX as the hosted version), or set them in `.env.local` for headless operation:
 
 ```bash
-pnpm dev
+OPENAI_API_KEY=sk-…              # used as a fallback for the OpenAI provider
+ALLOW_SERVER_KEY_FALLBACK=true   # required for the env-var path to take effect
+NEXT_PUBLIC_BYOK_ENABLED=false   # optional: hide the BYOK UI entirely (env-only mode)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech stack
 
-## Tech Stack
+Next.js 15 (App Router), React 19, Mantine 7, TanStack Query, Vercel AI SDK with adapters for OpenAI, Anthropic, Google, and Mistral. TypeScript throughout.
 
-- Next.js 14+
-- React 19
-- Mantine UI
-- GitHub REST API
-- React Query
-- TypeScript
-- React-Markdown
+## Roadmap: a CLI for coding agents
 
-## Project Structure
+The hosted web app is the easy on-ramp, but the long-term home for this tool is a **CLI** that local coding agents (Claude Code, Cursor's agent, Aider, etc.) can call directly. The agent feeds in two versions of a dependency, gets back a structured upgrade plan, and acts on it without a human ever leaving the terminal. Tracking issue: [#1](https://github.com/Hayawan/breakingchanges/issues) — open an issue or reach out via [@Hayawan](https://github.com/Hayawan) if this is something you'd use.
 
-```
-breakingchanges/
-├── src/
-│   ├── app/             # Next.js App Router
-│   ├── components/      # React components
-│   ├── lib/             # Utilities and API handlers
-│   │   ├── github.ts    # GitHub API integration
-│   │   └── types.ts     # TypeScript types
-│   └── styles/          # CSS modules
-├── public/              # Static assets
-└── .docs-breakingchanges/ # Project documentation
-```
+## Issues, ideas, or feedback
 
-## Usage
+Open an [issue on GitHub](https://github.com/Hayawan/breakingchanges/issues), or reach out via [@Hayawan](https://github.com/Hayawan).
 
-1. Enter a GitHub repository URL (e.g., https://github.com/facebook/react)
-2. View the list of releases for the repository
-3. Select a "Current Version" and a "Target Version" to compare
-4. See all releases between those versions with breaking changes highlighted
-5. View the full changelog between the selected versions
+## A short note on terms
 
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+Breaking Changes is a free service offered as-is. You bring your own key, you're responsible for the charges your provider bills you, and you assume the usual risks of pasting a credential into a third-party browser app — minimized but not eliminated by the BYOK design above. We don't store your keys, prompts, or completions, and we don't run analytics on your usage. If anything below the surface ever changes, this README will say so. For anything else, [open an issue](https://github.com/Hayawan/breakingchanges/issues).
 
 ## License
 
-This project is licensed under the MIT License.
+MIT.
