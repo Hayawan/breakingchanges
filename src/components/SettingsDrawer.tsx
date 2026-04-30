@@ -98,7 +98,7 @@ export function SettingsDrawer({ opened, onClose }: SettingsDrawerProps) {
       onClose={onClose}
       position="right"
       size="md"
-      title={<Title order={4}>Settings</Title>}
+      title={<span style={{ fontWeight: 600, fontSize: 16 }}>Settings</span>}
     >
       <Stack gap="lg">
         <Text size="sm" c="dimmed">

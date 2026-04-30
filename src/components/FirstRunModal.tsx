@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Modal, Stack, Text, Button, List, Title, Alert } from '@mantine/core';
+import { Modal, Stack, Text, Button, List, Alert } from '@mantine/core';
 import { IconShieldLock } from '@tabler/icons-react';
 import { isFirstRunSeen, markFirstRunSeen } from '@/lib/keyStorage';
 
@@ -34,10 +34,10 @@ export function FirstRunModal({ forceOpen = false, onAcknowledge }: FirstRunModa
       closeOnEscape={false}
       size="lg"
       title={
-        <Title order={3}>
-          <IconShieldLock size={20} style={{ verticalAlign: 'middle', marginRight: 8 }} />
+        <span style={{ fontWeight: 600, fontSize: 18, display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+          <IconShieldLock size={20} />
           Before you bring your own key
-        </Title>
+        </span>
       }
     >
       <Stack gap="md">

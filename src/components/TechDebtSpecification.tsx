@@ -142,10 +142,9 @@ export function TechDebtSpecification({
           <Loader size="md" />
           <Text mt="md">
             Analyzing changes between {currentVersion} and {targetVersion}...
-            <br />
-            <Text size="sm" c="dimmed" mt="xs">
-              This may take up to a minute as our AI analyzes the release notes.
-            </Text>
+          </Text>
+          <Text size="sm" c="dimmed" mt="xs">
+            This may take up to a minute as our AI analyzes the release notes.
           </Text>
         </div>
       </Paper>
