@@ -52,6 +52,8 @@ export interface AnalyzeBreakingChangesRequest {
     currentVersion: string;
     targetVersion: string;
   };
+  provider?: "openai" | "anthropic" | "google" | "mistral";
+  model?: string;
 }
 
 export interface AnalyzeBreakingChangesResponse {
