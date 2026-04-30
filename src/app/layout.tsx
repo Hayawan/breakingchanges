@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import "./globals.css";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ColorSchemeScript, mantineHtmlProps } from '@mantine/core';
@@ -21,15 +22,21 @@ export const metadata: Metadata = {
   description: "Identify breaking changes between versions in public GitHub repos",
 };
 
-export default function RootLayout({
+// Force dynamic SSR so the CSP nonce emitted by middleware can be applied to
+// Next.js's framework <script> tags. Static prerender bakes script tags without
+// nonces into the HTML, which strict-dynamic then blocks.
+export const dynamic = "force-dynamic";
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const nonce = (await headers()).get('x-nonce') ?? undefined;
   return (
     <html lang="en" {...mantineHtmlProps}>
       <head>
-        <ColorSchemeScript defaultColorScheme="light" />
+        <ColorSchemeScript defaultColorScheme="light" nonce={nonce} />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
