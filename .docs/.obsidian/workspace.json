@@ -20,8 +20,21 @@
               "icon": "lucide-file",
               "title": "main-PRD"
             }
+          },
+          {
+            "id": "57bede4fef2091b1",
+            "type": "leaf",
+            "state": {
+              "type": "release-notes",
+              "state": {
+                "currentVersion": "1.8.9"
+              },
+              "icon": "lucide-book-up",
+              "title": "Release Notes 1.8.9"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -168,7 +181,7 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "5ac0bf563f54d33f",
+  "active": "57bede4fef2091b1",
   "lastOpenFiles": [
     "project/tickets/2025-04-09-openai-assistant-integration.md",
     "project/tickets/2025-04-08-version-selection-ui.md",
