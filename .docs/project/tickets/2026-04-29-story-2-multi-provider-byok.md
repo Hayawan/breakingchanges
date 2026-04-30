@@ -101,20 +101,68 @@ So that **I can use the LLM provider I already pay for, without trusting Breakin
 
 ## Definition of Done
 
-- [ ] AI SDK packages scored, installed, pinned.
-- [ ] `analyzeBreakingChanges` dispatches to the correct provider; the four provider models verified end-to-end.
-- [ ] Provider + model selector in UI; selection persists per-provider.
-- [ ] Settings drawer with key input, validation, test-connection, show/hide, paste-friendly UX.
-- [ ] sessionStorage default; localStorage opt-in with warning; visible last-4 indicator; clear buttons; idle auto-clear.
-- [ ] First-run modal blocks until acknowledged; shown once per browser.
-- [ ] GitHub PAT field wired to `/api/releases`.
-- [ ] `/api/analyze` accepts provider/model + Authorization header; rejects malformed; sets no-store cache headers; emits no key-bearing logs.
-- [ ] CSP `connect-src` minimally widened.
-- [ ] `OPENAI_API_KEY` fallback gated behind `ALLOW_SERVER_KEY_FALLBACK` for self-hosted ergonomics.
-- [ ] Manual E2E across all four providers; log audit clean.
-- [ ] `pnpm build` clean; `pnpm dev` smoke test clean.
-- [ ] Story 1's hardening still passes `securityheaders.com` ≥ A.
+- [x] AI SDK packages scored, installed, pinned. *(ai@6.0.170, @ai-sdk/openai@3.0.54, @ai-sdk/anthropic@3.0.72, @ai-sdk/google@3.0.65, @ai-sdk/mistral@3.0.31. Transitive supplyChain/quality dipped below thresholds on Vercel's `@ai-sdk/gateway` sub-package and `json-schema@0.4.0`; user approved with explicit override.)*
+- [x] `analyzeBreakingChanges` dispatches to the correct provider; the four provider models verified end-to-end. *(Code path verified; live four-provider E2E is user-side per AC #20.)*
+- [x] Provider + model selector in UI; selection persists per-provider. *(Provider + model live in `TechDebtSpecification.tsx`; per-provider model is stored under `bc.model.<provider>` in `localStorage` and seeded on first run from `DEFAULT_MODELS`.)*
+- [x] Settings drawer with key input, validation, test-connection, show/hide, paste-friendly UX. *(Mantine `PasswordInput` ships show/hide; `/api/test-key` proxies the live ping per provider; format validation in `keyStorage.validateKey`.)*
+- [x] sessionStorage default; localStorage opt-in with warning; visible last-4 indicator; clear buttons; idle auto-clear. *(Idle clear runs on mount and on window focus via `runIdleAutoClear` in `ClientProviders.tsx`; threshold 24h.)*
+- [x] First-run modal blocks until acknowledged; shown once per browser. *(Mounted globally in `ClientProviders.tsx` so it fires before any key-prompt surface, not only the gear click.)*
+- [x] GitHub PAT field wired to `/api/releases`. *(PAT travels via `Authorization: Bearer …` header; route extracts and threads it through `fetchAllReleases` → `getGitHubApiHeaders(token)`. Existing `NEXT_PUBLIC_GITHUB_TOKEN` env path preserved for local self-host.)*
+- [x] `/api/analyze` accepts provider/model + Authorization header; rejects malformed; sets no-store cache headers; emits no key-bearing logs. *(`sanitizeErrorMessage` strips known key prefixes before `console.error`.)*
+- [x] CSP `connect-src` minimally widened. *(Not widened. All provider calls happen server-side via `/api/analyze` and `/api/test-key`; the browser only needs `'self'`. Documented as intentional.)*
+- [x] `OPENAI_API_KEY` fallback gated behind `ALLOW_SERVER_KEY_FALLBACK` for self-hosted ergonomics. *(Hosted deploy stays strict by default — fallback requires the explicit env var.)*
+- [ ] Manual E2E across all four providers; log audit clean. *(User-side verification — needs a real key from each provider plus a `docker logs` grep on staging.)*
+- [ ] `pnpm build` clean; `pnpm dev` smoke test clean. *(`tsc --noEmit` and `next lint` pass in sandbox; full `next build` is user-side because the sandbox cannot reach Google Fonts for Geist.)*
+- [ ] Story 1's hardening still passes `securityheaders.com` ≥ A. *(Verifies post-deploy. Routine `trig_01H4WGgRnZ8iQMP7Apcco4AJ` fires 2026-05-13 to audit.)*
 - [ ] Epic doc Story 2 acceptance items checked off.
+
+## Dev Agent Record
+
+### Agent Model Used
+claude-opus-4-7[1m] via BMAD `*develop-story` workflow.
+
+### File List
+
+**Added:**
+- `src/lib/llm.ts` — Provider-dispatching `analyzeBreakingChanges` over Vercel AI SDK
+- `src/lib/keyStorage.ts` — Client-only key custody (sessionStorage default, localStorage opt-in, idle auto-clear, validation, model persistence)
+- `src/components/SettingsDrawer.tsx` — Per-provider key + model UI plus optional GitHub PAT
+- `src/components/FirstRunModal.tsx` — Blocking first-visit education modal
+- `src/app/api/test-key/route.ts` — Server proxy for provider key validation (keeps CSP narrow)
+
+**Modified:**
+- `package.json` / `pnpm-lock.yaml` — Added pinned AI SDK packages; removed `openai`
+- `src/lib/types.ts` — Extended `AnalyzeBreakingChangesRequest` with `provider`/`model`
+- `src/lib/github.ts` — `getGitHubApiHeaders` and fetch helpers thread an optional token
+- `src/app/api/analyze/route.ts` — Rewritten for BYOK: provider/model fields, `Authorization` header, `ALLOW_SERVER_KEY_FALLBACK` gate, no-store headers, sanitized error log
+- `src/app/api/releases/route.ts` — Accepts Bearer GitHub PAT header, no-store headers
+- `src/app/page.tsx` — Sends GitHub PAT (when stored) on `/api/releases`
+- `src/components/TechDebtSpecification.tsx` — Provider/model selector, sends `Authorization` + `provider` + `model` on `/api/analyze`, BYOK feature-flag aware
+- `src/components/Header.tsx` — Settings gear icon (BYOK-flag-gated)
+- `src/components/ClientProviders.tsx` — Mounts `<FirstRunModal />` globally and runs idle auto-clear on focus
+
+**Deleted:**
+- `src/lib/openai.ts` — Replaced by `src/lib/llm.ts`
+
+### Completion Notes
+
+- Story split was avoided. The three sub-areas (provider abstraction / key custody / call-site wiring) shipped as commits 2a, 2b, 2c on `epic/byok-launch`.
+- Switched from OpenAI Assistants API (threads/runs/polling) to a single `generateText` call. Net code reduction despite gaining three provider adapters.
+- CSP intentionally **not** widened: `/api/analyze` and `/api/test-key` are server-side fetches, so the browser never contacts provider hosts directly. Reaffirms Story 1's narrow `connect-src`.
+- Default models per provider chosen for low-cost defaults: `gpt-4o-mini`, `claude-haiku-4-5`, `gemini-2.5-flash`, `mistral-small-latest`.
+- TDD Guard was toggled off for this story per user preference (small codebase, no existing test infra, "path of least resistance").
+- Socket score check on `ai@6.0.170` flagged transitive supplyChain (69) and quality (67) below thresholds. Failures localized to `@ai-sdk/gateway` (Vercel-internal, not imported by our code) and `json-schema@0.4.0` (legacy transitive). User approved with explicit override.
+
+### Change Log
+
+| Date | Commit | Summary |
+|------|--------|---------|
+| 2026-04-29 | 15a68e2 | Story 2a: Provider abstraction + BYOK analyze route |
+| 2026-04-29 | (next) | Story 2b: Key custody, settings drawer, first-run modal |
+| 2026-04-29 | (next) | Story 2c: Call-site wiring + GitHub PAT + feature flag |
+
+### Status
+Ready for Review
 
 ## Risk and Compatibility
 

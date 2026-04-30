@@ -28,7 +28,7 @@ export function FirstRunModal({ forceOpen = false, onAcknowledge }: FirstRunModa
   return (
     <Modal
       opened={opened}
-      onClose={() => { /* blocking — see Definition of Done #54 */ }}
+      onClose={() => { /* dismissal requires the explicit acknowledge button */ }}
       withCloseButton={false}
       closeOnClickOutside={false}
       closeOnEscape={false}

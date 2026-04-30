@@ -6,6 +6,9 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { queryClient } from '../lib/queryClient';
 import { runIdleAutoClear } from '../lib/keyStorage';
+import { FirstRunModal } from './FirstRunModal';
+
+const BYOK_ENABLED = process.env.NEXT_PUBLIC_BYOK_ENABLED !== 'false';
 
 // Create a custom theme with proper light/dark mode colors
 const theme = createTheme({
@@ -58,6 +61,7 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
     >
       <QueryClientProvider client={client}>
         <Notifications />
+        {BYOK_ENABLED && <FirstRunModal />}
         {children}
       </QueryClientProvider>
     </MantineProvider>

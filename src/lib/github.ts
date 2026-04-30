@@ -55,17 +55,17 @@ export function getGitHubTagsUrl(owner: string, repo: string, perPage: number = 
 /**
  * Creates headers for GitHub API requests
  */
-export function getGitHubApiHeaders(): HeadersInit {
+export function getGitHubApiHeaders(token?: string): HeadersInit {
   const headers: HeadersInit = {
     'Accept': 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
   };
-  
-  // Add authorization if token is available
-  if (process.env.NEXT_PUBLIC_GITHUB_TOKEN) {
-    headers['Authorization'] = `Bearer ${process.env.NEXT_PUBLIC_GITHUB_TOKEN}`;
+
+  const resolved = token ?? process.env.NEXT_PUBLIC_GITHUB_TOKEN;
+  if (resolved) {
+    headers['Authorization'] = `Bearer ${resolved}`;
   }
-  
+
   return headers;
 }
 
@@ -180,15 +180,15 @@ export function generateChangelogText(releases: GitHubRelease[]): string {
 /**
  * Fetches all releases for a GitHub repository with pagination
  */
-export async function fetchAllReleases(owner: string, repo: string): Promise<ProcessedReleasesResult> {
+export async function fetchAllReleases(owner: string, repo: string, token?: string): Promise<ProcessedReleasesResult> {
   const perPage = 100; // Maximum per page
   let page = 1;
   let allReleases: GitHubRelease[] = [];
   let hasMore = true;
-  
+
   while (hasMore) {
     const url = getGitHubReleasesUrl(owner, repo, perPage, page);
-    const headers = getGitHubApiHeaders();
+    const headers = getGitHubApiHeaders(token);
     
     const response = await fetch(url, { headers });
     
@@ -219,7 +219,7 @@ export async function fetchAllReleases(owner: string, repo: string): Promise<Pro
   // If no releases were found, try fetching tags instead
   if (allReleases.length === 0) {
     console.log(`No releases found for ${owner}/${repo}, trying tags instead...`);
-    return await fetchAllTags(owner, repo);
+    return await fetchAllTags(owner, repo, token);
   }
   
   // Sort releases by published_at, newest first
@@ -247,9 +247,9 @@ interface GitHubTag {
 /**
  * Fetches commit details to get the date for a tag
  */
-async function fetchCommitDetails(commitUrl: string): Promise<{ date: string }> {
+async function fetchCommitDetails(commitUrl: string, token?: string): Promise<{ date: string }> {
   try {
-    const headers = getGitHubApiHeaders();
+    const headers = getGitHubApiHeaders(token);
     const response = await fetch(commitUrl, { headers });
     
     if (!response.ok) {
@@ -270,9 +270,9 @@ async function fetchCommitDetails(commitUrl: string): Promise<{ date: string }> 
 /**
  * Converts a GitHub tag to GitHubRelease format
  */
-async function convertTagToRelease(tag: GitHubTag): Promise<GitHubRelease> {
+async function convertTagToRelease(tag: GitHubTag, token?: string): Promise<GitHubRelease> {
   // Fetch commit details to get the date
-  const { date } = await fetchCommitDetails(tag.commit.url);
+  const { date } = await fetchCommitDetails(tag.commit.url, token);
   
   return {
     id: parseInt(tag.commit.sha.substring(0, 8), 16) || Math.floor(Math.random() * 100000), // Generate an ID from commit SHA
@@ -290,15 +290,15 @@ async function convertTagToRelease(tag: GitHubTag): Promise<GitHubRelease> {
 /**
  * Fetches all tags for a GitHub repository and converts them to GitHubRelease format
  */
-export async function fetchAllTags(owner: string, repo: string): Promise<ProcessedReleasesResult> {
+export async function fetchAllTags(owner: string, repo: string, token?: string): Promise<ProcessedReleasesResult> {
   const perPage = 100; // Maximum per page
   let page = 1;
   let allTags: GitHubTag[] = [];
   let hasMore = true;
-  
+
   while (hasMore) {
     const url = getGitHubTagsUrl(owner, repo, perPage, page);
-    const headers = getGitHubApiHeaders();
+    const headers = getGitHubApiHeaders(token);
     
     const response = await fetch(url, { headers });
     
@@ -333,7 +333,7 @@ export async function fetchAllTags(owner: string, repo: string): Promise<Process
   
   // Convert tags to releases format (limit to 50 most recent to avoid excessive API calls)
   const tagsToConvert = allTags.slice(0, 50);
-  const releases = await Promise.all(tagsToConvert.map(convertTagToRelease));
+  const releases = await Promise.all(tagsToConvert.map((t) => convertTagToRelease(t, token)));
   
   // Sort by date (newest first)
   const sortedReleases = releases.sort((a, b) => 

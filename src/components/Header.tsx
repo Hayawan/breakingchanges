@@ -3,9 +3,9 @@ import { useMantineColorScheme } from '@mantine/core';
 import { IconBrandGithub, IconSun, IconMoon, IconAlertTriangleFilled, IconSettings } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { SettingsDrawer } from './SettingsDrawer';
-import { FirstRunModal } from './FirstRunModal';
-import { isFirstRunSeen } from '@/lib/keyStorage';
 import styles from '../styles/Header.module.css';
+
+const BYOK_ENABLED = process.env.NEXT_PUBLIC_BYOK_ENABLED !== 'false';
 
 export function Header() {
   const { colorScheme, setColorScheme } = useMantineColorScheme();
@@ -14,7 +14,6 @@ export function Header() {
   // Use client-side only rendering for theme toggle
   const [mounted, setMounted] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [firstRunPending, setFirstRunPending] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -22,19 +21,6 @@ export function Header() {
 
   const toggleTheme = () => {
     setColorScheme(isDark ? 'light' : 'dark');
-  };
-
-  const openSettings = () => {
-    if (!isFirstRunSeen()) {
-      setFirstRunPending(true);
-      return;
-    }
-    setSettingsOpen(true);
-  };
-
-  const onFirstRunAck = () => {
-    setFirstRunPending(false);
-    setSettingsOpen(true);
   };
 
   return (
@@ -65,15 +51,17 @@ export function Header() {
             </ActionIcon>
           )}
 
-          <ActionIcon
-            onClick={openSettings}
-            variant="subtle"
-            size="md"
-            aria-label="Settings"
-            title="Settings"
-          >
-            <IconSettings size={20} />
-          </ActionIcon>
+          {BYOK_ENABLED && (
+            <ActionIcon
+              onClick={() => setSettingsOpen(true)}
+              variant="subtle"
+              size="md"
+              aria-label="Settings"
+              title="Settings"
+            >
+              <IconSettings size={20} />
+            </ActionIcon>
+          )}
 
           <ActionIcon
             component="a"
@@ -100,8 +88,7 @@ export function Header() {
         </Group>
       </Container>
 
-      {firstRunPending && <FirstRunModal forceOpen onAcknowledge={onFirstRunAck} />}
-      <SettingsDrawer opened={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      {BYOK_ENABLED && <SettingsDrawer opened={settingsOpen} onClose={() => setSettingsOpen(false)} />}
     </header>
   );
 } 
