@@ -21,6 +21,11 @@ export const metadata: Metadata = {
   description: "Identify breaking changes between versions in public GitHub repos",
 };
 
+// Force dynamic SSR so the CSP nonce emitted by middleware can be applied to
+// Next.js's framework <script> tags. Static prerender bakes script tags without
+// nonces into the HTML, which strict-dynamic then blocks.
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({
   children,
 }: {
