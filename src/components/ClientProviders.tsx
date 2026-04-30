@@ -3,8 +3,9 @@
 import { MantineProvider, createTheme } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { QueryClientProvider } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { queryClient } from '../lib/queryClient';
+import { runIdleAutoClear } from '../lib/keyStorage';
 
 // Create a custom theme with proper light/dark mode colors
 const theme = createTheme({
@@ -42,6 +43,13 @@ const theme = createTheme({
 export function ClientProviders({ children }: { children: React.ReactNode }) {
   // Using a stable QueryClient instance to prevent hydration mismatches
   const [client] = useState(() => queryClient);
+
+  useEffect(() => {
+    runIdleAutoClear();
+    const onFocus = () => runIdleAutoClear();
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, []);
 
   return (
     <MantineProvider 

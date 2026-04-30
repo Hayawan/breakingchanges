@@ -1,7 +1,10 @@
 import { Container, Title, Group, Button, ActionIcon, Text, Flex, Box } from '@mantine/core';
 import { useMantineColorScheme } from '@mantine/core';
-import { IconBrandGithub, IconSun, IconMoon, IconAlertTriangleFilled } from '@tabler/icons-react';
+import { IconBrandGithub, IconSun, IconMoon, IconAlertTriangleFilled, IconSettings } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
+import { SettingsDrawer } from './SettingsDrawer';
+import { FirstRunModal } from './FirstRunModal';
+import { isFirstRunSeen } from '@/lib/keyStorage';
 import styles from '../styles/Header.module.css';
 
 export function Header() {
@@ -10,13 +13,28 @@ export function Header() {
   
   // Use client-side only rendering for theme toggle
   const [mounted, setMounted] = useState(false);
-  
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [firstRunPending, setFirstRunPending] = useState(false);
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const toggleTheme = () => {
     setColorScheme(isDark ? 'light' : 'dark');
+  };
+
+  const openSettings = () => {
+    if (!isFirstRunSeen()) {
+      setFirstRunPending(true);
+      return;
+    }
+    setSettingsOpen(true);
+  };
+
+  const onFirstRunAck = () => {
+    setFirstRunPending(false);
+    setSettingsOpen(true);
   };
 
   return (
@@ -36,7 +54,7 @@ export function Header() {
         
         <Group gap="sm">
           {mounted && (
-            <ActionIcon 
+            <ActionIcon
               onClick={toggleTheme}
               variant="subtle"
               size="md"
@@ -47,7 +65,17 @@ export function Header() {
             </ActionIcon>
           )}
 
-          <ActionIcon 
+          <ActionIcon
+            onClick={openSettings}
+            variant="subtle"
+            size="md"
+            aria-label="Settings"
+            title="Settings"
+          >
+            <IconSettings size={20} />
+          </ActionIcon>
+
+          <ActionIcon
             component="a"
             href="https://github.com/Hayawan/breakingchanges"
             target="_blank"
@@ -59,7 +87,7 @@ export function Header() {
             <IconBrandGithub size={20} />
           </ActionIcon>
           
-          <Button 
+          <Button
             component="a"
             href="https://github.com/sponsors/Hayawan"
             target="_blank"
@@ -71,6 +99,9 @@ export function Header() {
           </Button>
         </Group>
       </Container>
+
+      {firstRunPending && <FirstRunModal forceOpen onAcknowledge={onFirstRunAck} />}
+      <SettingsDrawer opened={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </header>
   );
 } 
