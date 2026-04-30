@@ -12,6 +12,7 @@ import { ChangelogPreview } from '../components/ChangelogPreview';
 import { TechDebtSpecification } from '../components/TechDebtSpecification';
 import { GitHubRepoInfo, GitHubRelease, ProcessedReleasesResult } from '../lib/types';
 import { getReleasesBetweenVersions, aggregateChangelogs } from '../lib/github';
+import { getKey } from '../lib/keyStorage';
 import styles from './page.module.css';
 
 export default function Home() {
@@ -40,8 +41,11 @@ export default function Home() {
     setIsInputExpanded(false); // Collapse after successful submission
     
     try {
-      const response = await fetch(`/api/releases?owner=${repo.owner}&repo=${repo.repo}`);
-      
+      const githubPat = getKey('github');
+      const response = await fetch(`/api/releases?owner=${repo.owner}&repo=${repo.repo}`, {
+        headers: githubPat ? { Authorization: `Bearer ${githubPat}` } : undefined,
+      });
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || `Error ${response.status}: Failed to fetch releases`);
