@@ -1,5 +1,7 @@
 # Story 3 — Terms, Privacy, and BYOK User Guide — Brownfield Addition
 
+> **Status (2026-04-29): Superseded.** The user opted to absorb this story's content into the project README rather than ship dedicated `/terms`, `/privacy`, and `/byok-guide` pages. Reasoning: Breaking Changes is a free service that stores nothing; the user prefers not to publish hosting/infrastructure details, and a heavyweight legal surface is disproportionate to the actual data footprint. The README now carries: BYOK trust model, key-scoping tips per provider, self-host instructions, a CLI roadmap note, and a brief as-is disclaimer paragraph. If the service ever grows beyond hobby scope (paid tier, account system, persistent state), revisit this ticket.
+>
 > Part of [Epic: Hosted BYOK Multi-Provider Launch](../../product/epic-byok-launch.md). Created via BMAD `brownfield-create-story` task.
 >
 > **Sequencing:** Best landed after Stories 1 and 2 ship to staging — concrete deployed-state facts (Traefik access log status, exact CSP, exact provider list, backup cadence) inform the actual document text. Drafting earlier risks rewrites.

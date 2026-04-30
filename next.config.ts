@@ -2,19 +2,9 @@ import type { NextConfig } from "next";
 
 const isProd = process.env.NODE_ENV === "production";
 
-const csp = [
-  "default-src 'self'",
-  "script-src 'self'",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://avatars.githubusercontent.com https://github.githubassets.com https://user-images.githubusercontent.com https://raw.githubusercontent.com",
-  "font-src 'self' data:",
-  "connect-src 'self' https://api.github.com",
-  "frame-ancestors 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-  "object-src 'none'",
-].join("; ");
-
+// Note: Content-Security-Policy is set per-request in src/middleware.ts so we can
+// emit a fresh nonce for Next.js's inline bootstrap scripts. Setting a static
+// `script-src 'self'` here blocks them outright.
 const securityHeaders = [
   { key: "Referrer-Policy", value: "no-referrer" },
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -25,7 +15,6 @@ const securityHeaders = [
   },
   ...(isProd
     ? [
-        { key: "Content-Security-Policy", value: csp },
         {
           key: "Strict-Transport-Security",
           value: "max-age=63072000; includeSubDomains; preload",
