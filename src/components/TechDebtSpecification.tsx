@@ -16,7 +16,6 @@ import {
 import { useClipboard } from '@mantine/hooks';
 import { IconRefresh, IconCopy, IconCheck, IconTerminal } from '@tabler/icons-react';
 import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
 import { TechDebtSpecificationProps } from '@/lib/types';
 import { createReleaseContext } from '@/lib/github';
 import styles from '@/styles/TechDebtSpecification.module.css';
@@ -174,7 +173,7 @@ export function TechDebtSpecification({
       </Text>
       <Divider mb="lg" />
       <div className={styles.markdownContainer}>
-        <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+        <ReactMarkdown>
           {result}
         </ReactMarkdown>
       </div>

@@ -12,7 +12,6 @@ import {
 } from '@mantine/core';
 import { IconAlertTriangle, IconCalendar, IconTag } from '@tabler/icons-react';
 import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
 import { ChangelogPreviewProps } from '@/lib/types';
 import styles from '@/styles/ChangelogPreview.module.css';
 import { UpgradeGuideModal } from './UpgradeGuideModal';
@@ -104,7 +103,7 @@ export function ChangelogPreview({ releases }: ChangelogPreviewProps) {
             </Accordion.Control>
             <Accordion.Panel>
               <div className={styles.releaseContent}>
-                <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                <ReactMarkdown>
                   {release.body || 'No release notes provided.'}
                 </ReactMarkdown>
               </div>

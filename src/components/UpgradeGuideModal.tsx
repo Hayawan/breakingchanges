@@ -2,7 +2,6 @@ import { Modal, Anchor, Group, ScrollArea } from '@mantine/core';
 import { IconHelp } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
 import rehypeExternalLinks from 'rehype-external-links';
 import styles from '@/styles/UpgradeGuideModal.module.css';
 
@@ -144,7 +143,7 @@ With thoughtful planning, good tooling, and smart prioritization, upgrading depe
         title="🔧 Best Practices for Upgrading Dependencies"
       >
         <div className={styles.modalContent}>
-          <ReactMarkdown rehypePlugins={[rehypeRaw, [rehypeExternalLinks, {target: '_blank'}]]}>
+          <ReactMarkdown rehypePlugins={[[rehypeExternalLinks, {target: '_blank'}]]}>
             {modalContent}
           </ReactMarkdown>
         </div>
