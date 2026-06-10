@@ -2,7 +2,7 @@
 
 Identify breaking changes between two versions of a public GitHub repository — fetch the releases, scan the bodies, and generate a tech-debt specification with the LLM provider of your choice.
 
-🌐 **Live:** [breakingchanges.ai](https://breakingchanges.ai)
+🌐 **Live:** [breakingchanges.ai](https://breakingchanges.ai) &nbsp;·&nbsp; ⌨️ **In your terminal:** [CLI & Claude Code skill](#cli--claude-code-skill) — no API key required
 
 ## What it does
 
@@ -68,9 +68,49 @@ NEXT_PUBLIC_BYOK_ENABLED=false   # optional: hide the BYOK UI entirely (env-only
 
 Next.js 15 (App Router), React 19, Mantine 7, TanStack Query, Vercel AI SDK with adapters for OpenAI, Anthropic, Google, and Mistral. TypeScript throughout.
 
-## Roadmap: a CLI for coding agents
+## CLI & Claude Code skill
 
-The hosted web app is the easy on-ramp, but the long-term home for this tool is a **CLI** that local coding agents (Claude Code, Cursor's agent, Aider, etc.) can call directly. The agent feeds in two versions of a dependency, gets back a structured upgrade plan, and acts on it without a human ever leaving the terminal. Tracking issue: [#1](https://github.com/Hayawan/breakingchanges/issues) — open an issue or reach out via [@Hayawan](https://github.com/Hayawan) if this is something you'd use.
+The hosted web app is the easy on-ramp, but if you live in a terminal the fastest path is the **Claude Code skill** — the same workflow, run where you already work. Your coding agent reads the current version from your `package.json`, fetches the changelogs, and writes the tech-debt spec grounded in your real call sites.
+
+**No API key.** When you run it through an agent, the agent *is* the LLM — there's no BYOK key to paste and nothing is proxied through a server.
+
+### Install as a Claude Code skill
+
+```bash
+git clone https://github.com/Hayawan/breakingchanges.git
+mkdir -p ~/.claude/skills
+cp -r breakingchanges/skill/breaking-changes ~/.claude/skills/
+```
+
+Then, in a new Claude Code session, just ask in plain language:
+
+> what breaks if I upgrade react from 18 to 19?
+
+or invoke it explicitly with `/breaking-changes`. The skill infers the repo and current version from your project, runs the fetch, and produces the upgrade plan. (Project-scoped install also works: copy into `<your-repo>/.claude/skills/` instead.)
+
+### Use the CLI directly (no agent required)
+
+The skill is backed by a **zero-dependency** Node script (Node 18+, uses the built-in `fetch`). Run it standalone to get the aggregated changelog or structured JSON, then pipe it into any tool you like:
+
+```bash
+# explicit version range, human-readable markdown
+node breakingchanges/skill/breaking-changes/bin/fetch-changelogs.mjs \
+  facebook/react --from v18.0.0 --to v19.0.0
+
+# infer --from from the installed version in ./package.json, emit JSON
+node breakingchanges/skill/breaking-changes/bin/fetch-changelogs.mjs \
+  facebook/react --pkg react --json
+```
+
+| Flag | Purpose |
+|------|---------|
+| `--from <tag>` | Current version (required unless `--pkg` resolves it). |
+| `--to <tag>` | Target version. Defaults to the latest release/tag. |
+| `--pkg <name>` | Infer `--from` from `<name>` in the local `package.json`. |
+| `--token <pat>` | GitHub token (or set `GITHUB_TOKEN`) to lift the 60 req/hr anonymous limit. |
+| `--json` | Emit structured JSON instead of aggregated markdown. |
+
+Run with `--help` for the full list. Tags with or without a leading `v` both match. See the [skill source and full docs](https://github.com/Hayawan/breakingchanges/tree/main/skill/breaking-changes) for the analysis framing and known limitations.
 
 ## Issues, ideas, or feedback
 

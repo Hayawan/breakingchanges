@@ -10,6 +10,7 @@ import { ReleaseList } from '../components/ReleaseList';
 import { VersionSelector } from '../components/VersionSelector';
 import { ChangelogPreview } from '../components/ChangelogPreview';
 import { TechDebtSpecification } from '../components/TechDebtSpecification';
+import { CliCallout } from '../components/CliCallout';
 import { GitHubRepoInfo, GitHubRelease, ProcessedReleasesResult } from '../lib/types';
 import { getReleasesBetweenVersions, aggregateChangelogs } from '../lib/github';
 import { getKey } from '../lib/keyStorage';
@@ -117,7 +118,9 @@ export default function Home() {
               </Group>
             )}
           </Paper>
-          
+
+          {releases.length === 0 && !isLoading && <CliCallout />}
+
           {repoInfo && releases.length > 0 && (
             <>
               <ReleaseList 

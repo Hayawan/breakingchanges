@@ -3,6 +3,17 @@ import { NextRequest, NextResponse } from 'next/server';
 const IS_PROD = process.env.NODE_ENV === 'production';
 
 export function middleware(request: NextRequest) {
+  // This app has no Server Actions and no native <form> POSTs to page routes —
+  // every mutation goes through /api/* via fetch (the matcher below excludes
+  // /api). So any POST reaching a page route is illegitimate: scanners send
+  // bogus `Next-Action` headers and truncated multipart bodies, which crash
+  // Next's action dispatcher with "Cannot read properties of undefined
+  // (reading 'workers')" and "Unexpected end of form". Reject them with a clean
+  // 405 before they ever reach the dispatcher.
+  if (request.method === 'POST') {
+    return new NextResponse(null, { status: 405, headers: { Allow: 'GET' } });
+  }
+
   if (!IS_PROD) {
     return NextResponse.next();
   }
